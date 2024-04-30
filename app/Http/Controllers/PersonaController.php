@@ -105,7 +105,7 @@ class PersonaController extends Controller
             $respEdit->save();
             DB::commit();
             //Log::info('Persona actualizada');
-            $respEdit = $respEdit->only(['id','nombre','enabled', 'updated_at']);
+            $respEdit = $respEdit->only(['id','nombre','apellido','enabled', 'updated_at']);
             return response()->json($respEdit, 201);
 
         }catch(Exception $e){
