@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Especie;
 use App\Models\RespFormulario;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -39,28 +40,43 @@ class RespuestaController extends Controller
         unset($data['usuario_id']);
         unset($data['id']);
 
-        $resultados =[];
-        foreach ($data['analisis'] as $registro) {
-            $especieId = $registro['especie_id'];
-            $tallas[$especieId][] = $registro['talla'];
-            $pesos[$especieId][] = $registro['peso'];
-        }      
-        foreach ($tallas as $especieId => $arrayTallas) {
-            // Calcular la talla media y moda
-            $tallaMedia = round(Average::mean($arrayTallas),1);
-            $tallaModa = Average::mode($arrayTallas);
-            // Calcular el peso medio
-            $arrayPesos = $pesos[$especieId];
-            $pesoMedia = round(Average::mean($arrayPesos),1);
-            // Guardar los resultados
-            $resultados[] = [
-                'especie_id' => $especieId,
-                'talla_media' => $tallaMedia,
-                'talla_moda' => $tallaModa,
-                'peso_media' => $pesoMedia
-            ];
+        if(isset($data['analisis']) && count($data['analisis']) > 0){
+            $resp->json = $data;
+            $resultados =[];
+            foreach ($data['analisis'] as $registro) {
+                $especieId = $registro['especie_id'];
+                $tallas[$especieId][] = $registro['talla'];
+                $pesos[$especieId][] = $registro['peso'];
+            }      
+            foreach ($tallas as $especieId => $arrayTallas) {
+                // Calcular la talla media y moda
+                $tallaMedia = round(Average::mean($arrayTallas),1);
+                $tallaModa = Average::mode($arrayTallas);
+                // Calcular el peso medio
+                $arrayPesos = $pesos[$especieId];
+                $pesoMedia = round(Average::mean($arrayPesos),1);
+                // Guardar los resultados
+
+                $especieTallaMenor = Especie::find($especieId)->talla_menor_a;
+                $totalEspecie = count($arrayTallas);
+                $ntotalEspecieMenor = count(array_filter($arrayTallas, function($talla) use ($especieTallaMenor){
+                    return $talla < $especieTallaMenor;
+                }));
+                
+                $porcentaje = round(($ntotalEspecieMenor / $totalEspecie) * 100,1);
+
+                $resultados[] = [
+                    'especie_id' => $especieId,
+                    'talla_media' => $tallaMedia,
+                    'talla_moda' => $tallaModa,
+                    'peso_media' => $pesoMedia,
+                    'porc_menor_a' => $porcentaje,
+                ];
+            }
+            $data['resultados'] = $resultados;
+        }else{
+            $data['resultados'] = [];
         }
-        $data['resultados'] = $resultados;
         $resp->json = $data;
         
         
