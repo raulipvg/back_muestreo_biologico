@@ -11,7 +11,9 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
-
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 /**
  * Class Usuario
@@ -29,8 +31,9 @@ use Illuminate\Validation\ValidationException;
  * @property Persona $persona
  * @package App\Models
  */
-class Usuario extends Model
+class Usuario extends Authenticatable
 {
+    use HasApiTokens, HasFactory;
 	protected $table = 'usuarios';
 	protected $primaryKey = 'id';
 	public $incrementing = true;
@@ -58,7 +61,7 @@ class Usuario extends Model
 
 	public function getAuthPassword()
 	{
-		return $this->Password;
+		return $this->password;
 	}
 
 	public function validate(array $data)

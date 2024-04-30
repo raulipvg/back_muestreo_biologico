@@ -29,8 +29,8 @@ class PersonaController extends Controller
             }
         }else{
             try{
-                $resp = Persona::select('id','nombre', 
-                                        'enabled','updated_at')->get();
+                $resp = Persona::select('id','nombre','apellido', 
+                                        'enabled','updated_at','rut')->get();
                 return response()->json($resp, 201);
                 
             }catch(Exception $e){
@@ -45,7 +45,7 @@ class PersonaController extends Controller
 
     public function get($id){
         try{
-            $resp = Persona::select('id','nombre', 
+            $resp = Persona::select('id','nombre', 'apellido', 'rut',
                                     'enabled')
                                     ->where('id',$id)->first();
             if (!$resp) {
@@ -67,11 +67,13 @@ class PersonaController extends Controller
             DB::beginTransaction();
             $resp = new Persona();
             $resp->nombre = strtoupper($request->nombre);
+            $resp->apellido = strtoupper($request->apellido);
+            $resp->rut = strtoupper($request->rut);
             $resp->enabled = $request->enabled;
             $resp->save();
             DB::commit();
 
-            $resp = $resp->only(['id','nombre','enabled', 'updated_at']);
+            $resp = $resp->only(['id','nombre','apellido','rut','enabled', 'updated_at']);
             //log::info('Nueva persona creada');
             return response()->json($resp, 201);
         }catch(Exception $e){
@@ -96,6 +98,8 @@ class PersonaController extends Controller
 
             $respEdit->fill([
                 'nombre' => strtoupper($request->nombre),
+                'apellido' => strtoupper($request->apellido),
+                'rut' => strtoupper($request->rut),
                 'enabled' => $request->enabled
             ]);
             $respEdit->save();
