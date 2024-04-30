@@ -8,13 +8,14 @@ namespace App\Models;
 
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 /**
  * Class RespFormulario
  * 
  * @property int $id
  * @property int $formulario_id
- * @property string $json
+ * @property json $json
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property bool $enabled
@@ -33,7 +34,7 @@ class RespFormulario extends Model
 
 	protected $casts = [
 		'formulario_id' => 'int',
-		'json' => 'binary',
+		'json' => 'json',
 		'enabled' => 'bool',
 		'usuario_id' => 'int'
 
@@ -54,5 +55,10 @@ class RespFormulario extends Model
 	public function usuario()
 	{
 		return $this->belongsTo(Usuario::class, 'usuario_id');
+	}
+	public function nave()
+	{
+		return $this->belongsTo(Nave::class, 'json->>nave_id');
+
 	}
 }

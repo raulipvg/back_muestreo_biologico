@@ -49,12 +49,12 @@ class Persona extends Model
 
 	public function usuario()
 	{
-		return $this->hasOne(Usuario::class, 'personaid');
+		return $this->hasOne(Usuario::class, 'persona_id');
 	}
 
 	public function validate(array $data)
     {
-        $id = isset($data['Id']) ? $data['Id'] : null;
+        $id = isset($data['id']) ? $data['id'] : null;
 
         $rules = [
             'nombre' => [
@@ -71,7 +71,7 @@ class Persona extends Model
                 'required',
                 'string',
                 'max:13',
-                Rule::unique('persona','Rut')->ignore($id, 'Id'),
+                Rule::unique('persona','rut')->ignore($id, 'id'),
             ],
             'enabled' => 'required|min:0|max:1'
         ];

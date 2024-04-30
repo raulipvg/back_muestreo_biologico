@@ -35,12 +35,13 @@ Route::group(['prefix'=> '/formulario'], function () {
     Route::get('/get/{id}',[FormularioController::class,'get'])->name('GetId');
     Route::post('/update',[FormularioController::class,'update'])->name('Update');
     Route::post('/cambiarestado',[FormularioController::class,'cambiarestado'])->name('CambiarEstado');
+    Route::get('/getselects',[FormularioController::class,'getselects'])->name('GetSelects');
 
 });
 
 //API MANTEMIENTO ESPECIE
 Route::group(['prefix'=> '/especie'], function () {
-    Route::get('/getall',[EspecieController::class,'getall'])->name('GetAll');
+    Route::get('/getall/{id?}',[EspecieController::class,'getall'])->name('GetAll');
     Route::get('/get/{id}',[EspecieController::class,'get'])->name('GetId');
     Route::post('/create',[EspecieController::class,'create'])->name('Create');
     Route::post('/update',[EspecieController::class,'update'])->name('Update');
@@ -49,7 +50,7 @@ Route::group(['prefix'=> '/especie'], function () {
 
 //API MANTEMIENTO NAVE
 Route::group(['prefix'=> '/nave'], function () {
-    Route::get('/getall',[NaveController::class,'getall'])->name('GetAll');
+    Route::get('/getall/{id?}',[NaveController::class,'getall'])->name('GetAll');
     Route::get('/get/{id}',[NaveController::class,'get'])->name('GetId');
     Route::post('/create',[NaveController::class,'create'])->name('Create');
     Route::post('/update',[NaveController::class,'update'])->name('Update');
@@ -58,7 +59,7 @@ Route::group(['prefix'=> '/nave'], function () {
 
 //API MANTEMIENTO PLANTA
 Route::group(['prefix'=> '/planta'], function () {
-    Route::get('/getall',[PlantaController::class,'getall'])->name('GetAll');
+    Route::get('/getall/{id?}',[PlantaController::class,'getall'])->name('GetAll');
     Route::get('/get/{id}',[PlantaController::class,'get'])->name('GetId');
     Route::post('/create',[PlantaController::class,'create'])->name('Create');
     Route::post('/update',[PlantaController::class,'update'])->name('Update');
@@ -67,7 +68,7 @@ Route::group(['prefix'=> '/planta'], function () {
 
 //API MANTENIMIENTO LUGARM
 Route::group(['prefix'=> '/lugarm'], function () {
-    Route::get('/getall',[LugarMController::class,'getall'])->name('GetAll');
+    Route::get('/getall/{id?}',[LugarMController::class,'getall'])->name('GetAll');
     Route::get('/get/{id}',[LugarMController::class,'get'])->name('GetId');
     Route::post('/create',[LugarMController::class,'create'])->name('Create');
     Route::post('/update',[LugarMController::class,'update'])->name('Update');
@@ -76,7 +77,7 @@ Route::group(['prefix'=> '/lugarm'], function () {
 
 //API MANTENIMIENTO CLASIFICACION
 Route::group(['prefix'=> '/clasificacion'], function () {
-    Route::get('/getall',[ClasificacionController::class,'getall'])->name('GetAll');
+    Route::get('/getall/{id?}',[ClasificacionController::class,'getall'])->name('GetAll');
     Route::get('/get/{id}',[ClasificacionController::class,'get'])->name('GetId');
     Route::post('/create',[ClasificacionController::class,'create'])->name('Create');
     Route::post('/update',[ClasificacionController::class,'update'])->name('Update');
@@ -85,7 +86,7 @@ Route::group(['prefix'=> '/clasificacion'], function () {
 
 //API MANTENIMIENTO FLOTA
 Route::group(['prefix'=> '/flota'], function () {
-    Route::get('/getall',[FlotaController::class,'getall'])->name('GetAll');
+    Route::get('/getall/{id?}',[FlotaController::class,'getall'])->name('GetAll');
     Route::get('/get/{id}',[FlotaController::class,'get'])->name('GetId');
     Route::post('/create',[FlotaController::class,'create'])->name('Create');
     Route::post('/update',[FlotaController::class,'update'])->name('Update');
@@ -94,7 +95,7 @@ Route::group(['prefix'=> '/flota'], function () {
 
 //API MANTENIMIENTO PUERTO 
 Route::group(['prefix'=> '/puerto'], function () {
-    Route::get('/getall',[PuertoController::class,'getall'])->name('GetAll');
+    Route::get('/getall/{id?}',[PuertoController::class,'getall'])->name('GetAll');
     Route::get('/get/{id}',[PuertoController::class,'get'])->name('GetId');
     Route::post('/create',[PuertoController::class,'create'])->name('Create');
     Route::post('/update',[PuertoController::class,'update'])->name('Update');
@@ -103,7 +104,7 @@ Route::group(['prefix'=> '/puerto'], function () {
 
 //API MANTENIMIENTO DEPARTAMENTO
 Route::group(['prefix'=> '/departamento'], function () {
-    Route::get('/getall',[DepartamentoController::class,'getall'])->name('GetAll');
+    Route::get('/getall/{id?}',[DepartamentoController::class,'getall'])->name('GetAll');
     Route::get('/get/{id}',[DepartamentoController::class,'get'])->name('GetId');
     Route::post('/create',[DepartamentoController::class,'create'])->name('Create');
     Route::post('/update',[DepartamentoController::class,'update'])->name('Update');
@@ -112,7 +113,7 @@ Route::group(['prefix'=> '/departamento'], function () {
 
 //API MATENIMIENTO PERSONA 
 Route::group(['prefix'=> '/persona'], function () {
-    Route::get('/getall',[PersonaController::class,'getall'])->name('GetAll');
+    Route::get('/getall/{id?}',[PersonaController::class,'getall'])->name('GetAll');
     Route::get('/get/{id}',[PersonaController::class,'get'])->name('GetId');
     Route::post('/create',[PersonaController::class,'create'])->name('Create');
     Route::post('/update',[PersonaController::class,'update'])->name('Update');
@@ -121,9 +122,9 @@ Route::group(['prefix'=> '/persona'], function () {
 
 //API MANTENIMIENTO RESPUESTA
 Route::group(['prefix'=> '/respuesta'], function () {
-    Route::get('/getall',[RespuestaController::class,'Index'])->name('GetAll');
+    Route::get('/getall/{id?}',[RespuestaController::class,'Index'])->name('GetAll');
     Route::get('/resp',[RespuestaController::class,'Index'])->name('Respuesta');
-    Route::post('/ingresar',[RespuestaController::class,'IngresarRespuesta'])->name('IngresarRespuesta');
+    Route::post('/create',[RespuestaController::class,'Create'])->name('IngresarRespuesta');
     Route::get('/query',[RespuestaController::class,'Query'])->name('Query');
 
 });

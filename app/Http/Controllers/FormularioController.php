@@ -6,6 +6,7 @@ use App\Models\Formulario;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\EspecieController;
 
 class FormularioController extends Controller
 {
@@ -101,4 +102,47 @@ class FormularioController extends Controller
             ],500);
         }
     }
+
+    public function getselects(){
+
+        $especiesController = new EspecieController();
+        $especies = $especiesController->getall(1);
+
+        $navesController = new NaveController();
+        $naves = $navesController->getall(1);
+
+        $plantasController = new PlantaController();
+        $plantas = $plantasController->getall(1);
+
+        $lugarMController = new LugarMController();
+        $lugares = $lugarMController->getall(1);
+
+        $clasiController = new ClasificacionController();
+        $clasificaciones = $clasiController->getall(1);
+
+        $flotaController = new FlotaController();
+        $flotas = $flotaController->getall(1);
+
+        $puertoController = new PuertoController();
+        $puertos = $puertoController->getall(1);
+
+        $departamentoController = new DepartamentoController();
+        $departamentos = $departamentoController->getall(1);
+
+        $personaController = new PersonaController();
+        $personas = $personaController->getall(1);
+
+        return response()->json([
+            'especies' => $especies,
+            'naves' => $naves,
+            'plantas' => $plantas,
+            'lugarms' => $lugares,
+            'clasificaciones' => $clasificaciones,
+            'flotas' => $flotas,
+            'puertos' => $puertos,
+            'departamentos' => $departamentos,
+            'personas' => $personas
+        ],201);
+    }
+
 }

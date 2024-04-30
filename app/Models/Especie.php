@@ -28,11 +28,20 @@ class Especie extends Model
 	public $timestamps = true;
 
 	protected $casts = [
-		'enabled' => 'bool'
+		'enabled' => 'bool',
+		'talla_min' => 'int',
+		'talla_max' => 'int',
+		'peso_min' => 'int',
+		'peso_max' => 'int'
 	];
 
 	protected $fillable = [
 		'nombre',
-		'enabled'
+		'enabled',
+		'talla_min',
+		'talla_max',
+		'peso_min',
+		'peso_max',
+	
 	];
 }
