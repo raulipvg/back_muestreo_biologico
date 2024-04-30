@@ -42,8 +42,10 @@ class EspecieController extends Controller
     }
     public function get($id){
         try{
-            $resp = Especie::select('id','nombre', 
-                                    'enabled')
+            $resp = Especie::select('id','nombre',
+                                    'talla_min','talla_max',
+                                    'peso_min','peso_max',
+                                    'talla_menor_a','enabled',)
                                     ->where('id',$id)->first();
             if (!$resp) {
                 throw new Exception('Especie no encontrada');
@@ -63,6 +65,11 @@ class EspecieController extends Controller
             DB::beginTransaction();
             $resp = new Especie();
             $resp->nombre = strtoupper($request->nombre);
+            $resp->talla_max = $request->talla_max;
+            $resp->talla_min = $request->talla_min;
+            $resp->peso_max = $request->peso_max;
+            $resp->peso_min = $request->peso_min;
+            $resp->talla_menor_a = $request->talla_menor_a;
             $resp->enabled = $request->enabled;
             $resp->save();
             DB::commit();
@@ -92,6 +99,11 @@ class EspecieController extends Controller
 
             $respEdit->fill([
                 'nombre' => strtoupper($request->nombre),
+                'talla_max' => $request->talla_max,
+                'talla_min' => $request->talla_min,
+                'peso_max' => $request->peso_max,
+                'peso_min' => $request->peso_min,
+                'talla_menor_a' => $request->talla_menor_a,
                 'enabled' => $request->enabled
             ]);
             $respEdit->save();

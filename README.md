@@ -1,66 +1,49 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Backend sistema formularios
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Backend para el sistema de formularios y planillas. Requiere de ``php ^8.0``. Además, cuenta con los paquetes ``MathPHP`` y ``Socialite``.
+Hay que considerar que tanto la API como el Frontend deben estar en el mismo nivel de dominio.
 
-## About Laravel
+- Instalar
+- Variables de entorno
+- Ejecutar
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Instalar
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+Basta con usar el comando
 
-## Learning Laravel
+    composer install
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+y se instalará los paquetes y dependencias necesarias.
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+## Variables de entorno
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+Se recomienda duplicar el archivo ``.exv.example`` y renombrar el archivo duplicado a solo ``.env``, y realizar la siguientes modificaciones:
 
-## Laravel Sponsors
+     7 | FRONTEND_URL= http://localhost:4200     <- URL del frontend
+     8 | SESSION_DOMAIN=localhost                <- Solo el dominio, sin puertos ni protocolo
+    ...
+    15 | DB_CONNECTION=pgsql                     <- tipo de base de datos (pgsql)
+    16 | DB_HOST=127.0.0.1                       <- host de la base de datos
+    17 | DB_PORT=5432                            <- puerto de la base de datos
+    18 | DB_DATABASE=formularios                 <- nombre de la base de datos
+    19 | DB_USERNAME=postgres                    <- username de la base de datos
+    20 | DB_PASSWORD=                            <- contraseña de la base de datos
+    ...
+    66 | GOOGLE_CLIENT_ID=                       <- Id del cliente de Google
+    67 | GOOGLE_CLIENT_SECRET=                   <- Secreto del cliente de Google 
+    69 | GOOGLE_REDIRECT_URI=                    <- URL del callback para Google
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+La variable ``FRONTEND_URL`` corresponde a un ``origin``, por lo tanto, no debe tener algún caracter después del puerto (en caso que se especifique el puerto).
 
-### Premium Partners
+La variable ``SESSION_DOMAIN`` debe ser solo un ``top-level domain``. Si se generan conflictos con la API (respuestas 401), verificar esta variable.
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+Recordar que la variable GOOGLE_REDIRECT_URI debe ser el mismo valor ingresado en la App de Google Cloud, en el cliente de ``OAuth``.
 
-## Contributing
+## Ejecutar
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+Al igual que los proyectos de laravel, sólo con el comando 
 
-## Code of Conduct
+    php artisan serve
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+y se ejecutará en http://localhost:8000. 
