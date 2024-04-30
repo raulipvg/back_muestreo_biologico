@@ -78,9 +78,8 @@ class RespuestaController extends Controller
             $data['resultados'] = [];
         }
         $resp->json = $data;
-        
-        
         $resp->save();
+        
         return response()->json([
             "id" => $resp->id,
             "msg"=> "Respuesta Ingresada",
