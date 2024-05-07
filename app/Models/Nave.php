@@ -17,6 +17,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property bool $enabled
+ * @property int $flota_id
  *
  * @package App\Models
  */
@@ -33,6 +34,12 @@ class Nave extends Model
 
 	protected $fillable = [
 		'nombre',
-		'enabled'
+		'enabled',
+		'flota_id'
 	];
+
+	public function flota()
+	{
+		return $this->belongsTo(Flota::class);
+	}
 }

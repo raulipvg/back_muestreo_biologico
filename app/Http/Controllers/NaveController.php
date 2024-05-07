@@ -14,7 +14,7 @@ class NaveController extends Controller
 
         if(isset($id) && $id == 1){
             try{
-                $resp = Nave::select('id','nombre')
+                $resp = Nave::select('id','nombre','flota_id')
                                     ->where('enabled',true)
                                     ->orderBy('nombre','asc')
                                     ->get();
@@ -27,7 +27,8 @@ class NaveController extends Controller
             }
         }else{
             try{
-                $resp = Nave::select('id','nombre', 
+                //ARREGLAR SEGUN FLOTA ID
+                $resp = Nave::select('id','nombre','flota_id', 
                                         'enabled','updated_at')->get();
                 return response()->json($resp, 201);
             }catch(Exception $e){
@@ -42,6 +43,7 @@ class NaveController extends Controller
 
     public function get($id){
         try{
+            //ARREGLAR SEGUN FLOTA ID
             $resp = Nave::select('id','nombre', 
                                     'enabled')
                                     ->where('id',$id)->first();
@@ -61,6 +63,7 @@ class NaveController extends Controller
 
     public function create(Request $request){
         try{
+            //ARREGLAR SEGUN FLOTA ID
             DB::beginTransaction();
             $resp = new Nave();
             $resp->nombre = strtoupper($request->nombre);
@@ -84,6 +87,7 @@ class NaveController extends Controller
     public function update(Request $request){
 
         try{
+            //ARREGLAR SEGUN FLOTA ID
             $respEdit = Nave::find($request->id);
             if (!$respEdit) {
                 throw new Exception('Nave no encontrada');

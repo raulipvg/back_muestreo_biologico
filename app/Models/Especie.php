@@ -19,6 +19,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $peso_min
  * @property int $peso_max
  * @property int $talla_menor_a
+ * @property int $tipo1
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property bool $enabled
@@ -38,7 +39,8 @@ class Especie extends Model
 		'talla_max' => 'int',
 		'peso_min' => 'int',
 		'peso_max' => 'int',
-		'talla_menor_a' => 'int'
+		'talla_menor_a' => 'float',
+		'tipo1' => 'int',
 	];
 
 	protected $fillable = [
@@ -48,7 +50,8 @@ class Especie extends Model
 		'talla_max',
 		'peso_min',
 		'peso_max',
-		'talla_menor_a'
+		'talla_menor_a',
+		'tipo1',
 	
 	];
 }

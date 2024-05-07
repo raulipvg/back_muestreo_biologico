@@ -17,7 +17,7 @@ class EspecieController extends Controller
             try{
                 $resp = Especie::select('id','nombre',
                                         'talla_min','talla_max',
-                                        'peso_min','peso_max')
+                                        'peso_min','peso_max','tipo1')
                                     ->where('enabled',true)
                                     ->orderBy('nombre','asc')
                                     ->get();
