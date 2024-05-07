@@ -39,14 +39,14 @@ class RespuestaController extends Controller
         unset($data['formulario_id']);
         unset($data['usuario_id']);
         unset($data['id']);
-
         if(isset($data['analisis']) && count($data['analisis']) > 0){
-            $resp->json = $data;
+            //$resp->json = $data;
             $resultados =[];
             foreach ($data['analisis'] as $registro) {
                 $especieId = $registro['especie_id'];
                 $tallas[$especieId][] = $registro['talla'];
                 $pesos[$especieId][] = $registro['peso'];
+                $integridad[$especieId][] = $registro['integridad'];
             }      
             foreach ($tallas as $especieId => $arrayTallas) {
                 // Calcular la talla media y moda
@@ -55,6 +55,8 @@ class RespuestaController extends Controller
                 // Calcular el peso medio
                 $arrayPesos = $pesos[$especieId];
                 $pesoMedia = round(Average::mean($arrayPesos),1);
+                $arrayintegridad = $integridad[$especieId];
+                $integridadMedia = round(Average::mean($arrayintegridad),1);
                 // Guardar los resultados
 
                 $especieTallaMenor = Especie::find($especieId)->talla_menor_a;
@@ -71,6 +73,7 @@ class RespuestaController extends Controller
                     'talla_moda' => $tallaModa,
                     'peso_media' => $pesoMedia,
                     'porc_menor_a' => $porcentaje,
+                    'integridad_media' => $integridadMedia,
                 ];
             }
             $data['resultados'] = $resultados;
