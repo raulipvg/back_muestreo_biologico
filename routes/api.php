@@ -126,6 +126,7 @@ Route::group(['prefix'=> '/respuesta'], function () {
     Route::get('/getall/{id?}',[RespuestaController::class,'Index'])->name('GetAll');
     Route::get('/resp',[RespuestaController::class,'Index'])->name('Respuesta');
     Route::post('/create',[RespuestaController::class,'Create'])->name('IngresarRespuesta');
+    Route::post('/upload',[RespuestaController::class,'UploadImage'])->name('UploadImage');
     Route::get('/query',[RespuestaController::class,'Query'])->name('Query');
 
 });

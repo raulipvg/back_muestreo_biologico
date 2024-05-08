@@ -4,9 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Models\Especie;
 use App\Models\RespFormulario;
+use App\Models\RespStorage;
+use Google\Cloud\Storage\StorageClient;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Exception;
+use Illuminate\Support\Facades\Storage;
 use MathPHP\Statistics\Average;
 use MathPHP\Statistics\Mode;
 
@@ -32,6 +35,7 @@ class RespuestaController extends Controller
         try{
         $data = $request->all();
 
+        $file = $request->file('imagen');
         $resp = new RespFormulario();
         $resp->formulario_id = $data['formulario_id'];
         $resp->enabled = true;
@@ -93,6 +97,72 @@ class RespuestaController extends Controller
                 'message' => $e->getMessage()
             ],500);
         }
+    }
+
+    public function UploadImage(Request $request){
+        try{
+            $file = $request->file('imagen');
+            $respuesta_id = $request->input('respuesta_id');
+            if($file !=null){
+                $urls = $this->Upload([$file],$respuesta_id);
+                
+                if(!$urls){throw new Exception('Error en cargar archivos');}
+                
+                $storage= [];
+                foreach($urls as $url) {
+                    $storage[] = [
+                        'url' => $url['URL'],
+                        'nombre' => $url['Nombre'],
+                        'respuesta_id' => $respuesta_id,
+                    ];
+                }            
+                // Insertar todas las Compuestas en un lote
+                RespStorage::insert($storage);
+            }
+
+            return response()->json([
+                "id" => 1,
+                "msg"=> "Imagen subida",
+            ] ,201);
+        }catch(Exception $e){
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ],500);
+        }
+    }
+
+    public function Upload($files, $respuestaId){
+        if ($files) {
+            $result = [];
+            // Crear un nombre de carpeta único
+            $folderName = 'muestreo_biologico_resp_id'.$respuestaId.'_' . uniqid();
+    
+            foreach ($files as $file) {
+                // Obtener el nombre original del archivo
+                $fileName = $file->getClientOriginalName();
+                // Construir la ruta del archivo con la carpeta
+                $filePath = $folderName . '/' . $fileName;
+                // Subir archivo a Google Cloud Storage
+                $storage = new StorageClient([
+                    'projectId' => env('GOOGLE_CLOUD_PROJECT_ID'),
+                    'keyFilePath' => env('GOOGLE_CLOUD_KEY_FILE')
+                ]);
+    
+                $bucket = $storage->bucket(env('GOOGLE_CLOUD_STORAGE_BUCKET'));
+                $bucket->upload(
+                                fopen($file->getPathname(), 'r'),
+                                ['name' => $filePath]
+                                );    
+                // Obtener la URL firmada para el archivo
+                //$url = $object->signedUrl(new \DateTime('tomorrow'));
+                // Agregar la URL al array de URLs
+                 // Agregar el nombre del archivo y la URL al resultado
+                $result[] = ['Nombre' => $fileName, 'URL' => $filePath];
+            }
+            return $result;
+        } 
+        return false;
     }
     /**
      * Store a newly created resource in storage.
