@@ -28,8 +28,10 @@ class NaveController extends Controller
         }else{
             try{
                 //ARREGLAR SEGUN FLOTA ID
-                $resp = Nave::select('id','nombre','flota_id', 
-                                        'enabled','updated_at')->get();
+                $resp = Nave::select('naves.id','naves.nombre','flotas.nombre as flota', 
+                                        'naves.enabled','naves.updated_at')
+                            ->join('flotas','flotas.id','=','naves.flota_id')
+                                        ->get();
                 return response()->json($resp, 201);
             }catch(Exception $e){
                 return response()->json([
@@ -45,7 +47,7 @@ class NaveController extends Controller
         try{
             //ARREGLAR SEGUN FLOTA ID
             $resp = Nave::select('id','nombre', 
-                                    'enabled')
+                                    'flota_id','enabled')
                                     ->where('id',$id)->first();
             if (!$resp) {
                 throw new Exception('Nave no encontrada');
@@ -67,6 +69,7 @@ class NaveController extends Controller
             DB::beginTransaction();
             $resp = new Nave();
             $resp->nombre = strtoupper($request->nombre);
+            $resp->flota_id = $request->flota_id;
             $resp->enabled = $request->enabled;
             $resp->save();
             DB::commit();
@@ -94,11 +97,15 @@ class NaveController extends Controller
             }
             DB::beginTransaction();
             $respEdit->nombre = strtoupper($request->nombre);
+            $respEdit->flota_id = $request->flota_id;
             $respEdit->enabled = $request->enabled;
             $respEdit->save();
             DB::commit();
+            $respEdit->load('flota');
+            $respEdit->flota = $respEdit->flota->nombre;
             //Log::info('Nave actualizada');
-            $respEdit = $respEdit->only(['id','nombre','enabled', 'updated_at']);
+            $respEdit = $respEdit->only(['id','nombre','enabled', 'flota', 'updated_at']);
+
             return response()->json($respEdit, 201);
         }catch(Exception $e){
             DB::rollBack();

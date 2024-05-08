@@ -22,6 +22,7 @@ Se recomienda duplicar el archivo ``.exv.example`` y renombrar el archivo duplic
 
      7 | FRONTEND_URL= http://localhost:4200     <- URL del frontend
      8 | SESSION_DOMAIN=localhost                <- Solo el dominio, sin puertos ni protocolo
+     9 | SANCTUM_STATEFUL_DOMAINS=localhost:4200 <- Sólo el domino y el puerto (si especifica)
     ...
     15 | DB_CONNECTION=pgsql                     <- tipo de base de datos (pgsql)
     16 | DB_HOST=127.0.0.1                       <- host de la base de datos
@@ -33,6 +34,10 @@ Se recomienda duplicar el archivo ``.exv.example`` y renombrar el archivo duplic
     66 | GOOGLE_CLIENT_ID=                       <- Id del cliente de Google
     67 | GOOGLE_CLIENT_SECRET=                   <- Secreto del cliente de Google 
     69 | GOOGLE_REDIRECT_URI=                    <- URL del callback para Google
+    ...
+    74 | GOOGLE_CLOUD_PROJECT_ID=                <- Id del proyecto de Google
+    75 | GOOGLE_CLOUD_KEY_FILE=                  <- Ruta del archivo json de credencial de Google
+    76 | GOOGLE_CLOUD_STORAGE_BUCKET=            <- Nombre del bucket de Google Storage
 
 La variable ``FRONTEND_URL`` corresponde a un ``origin``, por lo tanto, no debe tener algún caracter después del puerto (en caso que se especifique el puerto).
 

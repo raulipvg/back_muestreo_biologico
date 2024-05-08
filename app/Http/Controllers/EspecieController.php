@@ -27,7 +27,7 @@ class EspecieController extends Controller
             }
         }else{
             try{
-                $resp = Especie::select('id','nombre', 
+                $resp = Especie::select('id','nombre', 'tipo1',
                                         'enabled','updated_at')->get();
                                         
                 return response()->json($resp, 201);            
@@ -45,7 +45,7 @@ class EspecieController extends Controller
             $resp = Especie::select('id','nombre',
                                     'talla_min','talla_max',
                                     'peso_min','peso_max',
-                                    'talla_menor_a','enabled',)
+                                    'talla_menor_a','enabled','tipo1')
                                     ->where('id',$id)->first();
             if (!$resp) {
                 throw new Exception('Especie no encontrada');
@@ -71,10 +71,11 @@ class EspecieController extends Controller
             $resp->peso_min = $request->peso_min;
             $resp->talla_menor_a = $request->talla_menor_a;
             $resp->enabled = $request->enabled;
+            $resp->tipo1 = $request->tipo1;
             $resp->save();
             DB::commit();
 
-            $resp = $resp->only(['id','nombre','enabled', 'updated_at']);
+            $resp = $resp->only(['id','nombre','enabled','tipo1', 'updated_at']);
             //log::info('Nueva especie creada');
             return response()->json($resp, 201);
         }catch(Exception $e){
@@ -104,12 +105,13 @@ class EspecieController extends Controller
                 'peso_max' => $request->peso_max,
                 'peso_min' => $request->peso_min,
                 'talla_menor_a' => $request->talla_menor_a,
+                'tipo1' => $request->tipo1,
                 'enabled' => $request->enabled
             ]);
             $respEdit->save();
             DB::commit();
             //Log::info('Especie actualizada');
-            $respEdit = $respEdit->only(['id','nombre','enabled', 'updated_at']);
+            $respEdit = $respEdit->only(['id','nombre','enabled','tipo1', 'updated_at']);
             return response()->json($respEdit, 201);
 
         }catch(Exception $e){
