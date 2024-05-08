@@ -33,8 +33,9 @@ class RespuestaController extends Controller
     public function Create(Request $request){
         
         try{
-        $data = $request->all();
-
+        $data = (array)json_decode($request->input('data'));
+        //$data = $request->all();
+        //$file2= $request2->file('imagen');
         $file = $request->file('imagen');
         $resp = new RespFormulario();
         $resp->formulario_id = $data['formulario_id'];
@@ -43,14 +44,15 @@ class RespuestaController extends Controller
         unset($data['formulario_id']);
         unset($data['usuario_id']);
         unset($data['id']);
+        unset($data['imagen']);
         if(isset($data['analisis']) && count($data['analisis']) > 0){
             //$resp->json = $data;
             $resultados =[];
             foreach ($data['analisis'] as $registro) {
-                $especieId = $registro['especie_id'];
-                $tallas[$especieId][] = $registro['talla'];
-                $pesos[$especieId][] = $registro['peso'];
-                $integridad[$especieId][] = $registro['integridad'];
+                $especieId = $registro->especie_id;
+                $tallas[$especieId][] = $registro->talla;
+                $pesos[$especieId][] = $registro->peso;
+                $integridad[$especieId][] = $registro->integridad;
             }      
             foreach ($tallas as $especieId => $arrayTallas) {
                 // Calcular la talla media y moda
@@ -85,46 +87,34 @@ class RespuestaController extends Controller
             $data['resultados'] = [];
         }
         $resp->json = $data;
+
+        DB::beginTransaction();
         $resp->save();
-        
+        $respuesta_id = $resp->id;
+
+        if($file !=null){
+            $urls = $this->Upload([$file],$respuesta_id);
+            
+            if(!$urls){throw new Exception('Error en cargar archivos');}
+            
+            $storage= [];
+            foreach($urls as $url) {
+                $storage[] = [
+                    'url' => $url['URL'],
+                    'nombre' => $url['Nombre'],
+                    'respuesta_id' => $respuesta_id,
+                ];
+            }            
+            // Insertar todas las Compuestas en un lote
+            RespStorage::insert($storage);
+        }
+        DB::commit(); 
         return response()->json([
             "id" => $resp->id,
             "msg"=> "Respuesta Ingresada",
         ] ,201);
         }catch(Exception $e){
-            return response()->json([
-                'success' => false,
-                'message' => $e->getMessage()
-            ],500);
-        }
-    }
-
-    public function UploadImage(Request $request){
-        try{
-            $file = $request->file('imagen');
-            $respuesta_id = $request->input('respuesta_id');
-            if($file !=null){
-                $urls = $this->Upload([$file],$respuesta_id);
-                
-                if(!$urls){throw new Exception('Error en cargar archivos');}
-                
-                $storage= [];
-                foreach($urls as $url) {
-                    $storage[] = [
-                        'url' => $url['URL'],
-                        'nombre' => $url['Nombre'],
-                        'respuesta_id' => $respuesta_id,
-                    ];
-                }            
-                // Insertar todas las Compuestas en un lote
-                RespStorage::insert($storage);
-            }
-
-            return response()->json([
-                "id" => 1,
-                "msg"=> "Imagen subida",
-            ] ,201);
-        }catch(Exception $e){
+            DB::rollBack();
             return response()->json([
                 'success' => false,
                 'message' => $e->getMessage()
