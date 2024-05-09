@@ -47,32 +47,52 @@ class RespuestaController extends Controller
                 */
 
                 $resp = RespFormulario::select(
-                    'resp_formularios.id',
-                    'naves.nombre as nave',
-                    'puertos.nombre as puerto',
-                    'plantas.nombre as planta',
-                    DB::raw("CONCAT(personas.nombre, ' ', personas.apellido) AS persona"),
-                    'resp_formularios.enabled',
-                    'resp_formularios.created_at'
-                )
-                ->where('resp_formularios.formulario_id', $formularioId)
-                ->join('naves', 'naves.id', '=', DB::raw("CAST(resp_formularios.json->>'nave_id' AS INTEGER)"))
-                ->join('puertos', 'puertos.id', '=', DB::raw("CAST(resp_formularios.json->>'puerto_id' AS INTEGER)"))
-                ->join('plantas', 'plantas.id', '=', DB::raw("CAST(resp_formularios.json->>'planta_id' AS INTEGER)"))
-                ->join('personas', 'personas.id', '=', DB::raw("CAST(resp_formularios.json->>'persona_id' AS INTEGER)"))                 
-                ->where('resp_formularios.id', 44)
-                
-                ->get();
+                                        'resp_formularios.id',
+                                        'naves.nombre as nave',
+                                        'puertos.nombre as puerto',
+                                        'plantas.nombre as planta',
+                                        DB::raw("CONCAT(personas.nombre, ' ', personas.apellido) AS persona"),
+                                        'resp_formularios.enabled',
+                                        'resp_formularios.created_at'
+                                    )
+                                    ->where('resp_formularios.formulario_id', $formularioId)
+                                    ->join('naves', 'naves.id', '=', DB::raw("CAST(resp_formularios.json->>'nave_id' AS INTEGER)"))
+                                    ->join('puertos', 'puertos.id', '=', DB::raw("CAST(resp_formularios.json->>'puerto_id' AS INTEGER)"))
+                                    ->join('plantas', 'plantas.id', '=', DB::raw("CAST(resp_formularios.json->>'planta_id' AS INTEGER)"))
+                                    ->join('personas', 'personas.id', '=', DB::raw("CAST(resp_formularios.json->>'persona_id' AS INTEGER)"))                 
+                                                  
+                                    ->get();
 
+                /*
                 $results = RespFormulario::select('resp_formularios.id', 
                                                 DB::raw("CAST(jsonb_array_elements_text(resp_formularios.json->'especieobjetivo_id') AS INTEGER) AS especieobjetivo_id"))
                                                 ->where('formulario_id', 1)
-                                                ->join('especies', 'especies.id', '=', DB::raw("CAST(jsonb_array_elements_text(resp_formularios.json->'especieobjetivo_id') AS INTEGER)"))
+                                                ->leftJoin('especies', function ($join) {
+                                                    $join->on(DB::raw("CAST(jsonb_array_elements_text(resp_formularios.json->'especieobjetivo_id') AS INTEGER)"), '=', 'especies.id');
+                                                })
                                                 ->get();
+                */
+                $results = DB::select("WITH extracted_especieobjetivo_ids AS (
+                                            SELECT resp_formularios.id, CAST(jsonb_array_elements_text(resp_formularios.json->'especieobjetivo_id') AS INTEGER) AS especieobjetivo_id
+                                            FROM resp_formularios
+                                            WHERE formulario_id = 1
+                                        )
+                                        SELECT extracted_especieobjetivo_ids.id, STRING_AGG(especies.nombre, ', ') AS nombres_especies
+                                            FROM extracted_especieobjetivo_ids
+                                            JOIN especies ON extracted_especieobjetivo_ids.especieobjetivo_id = especies.id
+                                            GROUP BY extracted_especieobjetivo_ids.id
+                            ");
 
-                
+                $respWithSpecies = $resp->map(function ($item) use ($results) {
+                    $joinedItem = collect($results)->firstWhere('id', $item->id);
+                    if ($joinedItem) {
+                        $item->nombres_especies = $joinedItem->nombres_especies;
+                    }
+                    return $item;
+                });
+                                               // Obtener los nombres de las especies
 
-                return response()->json([$resp,$results] ,201);
+                return response()->json([$respWithSpecies] ,201);
             }else{
             
                     $resp= RespFormulario::select('resp_formularios.id','formularios.titulo',
