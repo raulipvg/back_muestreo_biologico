@@ -124,8 +124,10 @@ Route::group(['prefix'=> '/persona'], function () {
 //API MANTENIMIENTO RESPUESTA
 Route::group(['prefix'=> '/respuesta'], function () {
     Route::get('/getall/{id?}',[RespuestaController::class,'Index'])->name('GetAll');
+    Route::get('/get/{id}',[RespuestaController::class,'Get'])->name('GetId');
     Route::get('/resp',[RespuestaController::class,'Index'])->name('Respuesta');
     Route::post('/create',[RespuestaController::class,'Create'])->name('IngresarRespuesta');
+    Route::post('/update',[RespuestaController::class,'Update'])->name('UpdateRespuesta');
     Route::get('/query',[RespuestaController::class,'Query'])->name('Query');
 
 });

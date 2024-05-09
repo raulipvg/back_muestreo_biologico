@@ -20,35 +20,250 @@ class RespuestaController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function Index()
-    {
-        $resp= RespFormulario::select('resp_formularios.Id','formularios.Titulo',
-                                        'resp_formularios.Enabled','resp_formularios.created_at')
-                                    ->join('formularios','formularios.Id','=','resp_formularios.FormularioId')
-                                    ->get();
+    public function Index($formularioId = null){
+        try{
+            if($formularioId){
+                /*
+                $resp = RespFormulario::select(
+                    'resp_formularios.id',
+                    'naves.nombre as nave',
+                    'puertos.nombre as puerto',
+                    'plantas.nombre as planta',
+                    DB::raw("CONCAT(personas.nombre, ' ', personas.apellido) AS persona"),
+                    'resp_formularios.enabled',
+                    'resp_formularios.created_at',
+                    DB::raw("(SELECT STRING_AGG(CAST(value::TEXT AS VARCHAR), ',') 
+                              FROM jsonb_array_elements_text(json->'especieobjetivo_id') AS elements(value)) as especieobjetivo_ids")
+                )
+                ->where('resp_formularios.formulario_id', $formularioId)
+                ->join('naves', 'naves.id', '=', DB::raw("CAST(resp_formularios.json->>'nave_id' AS INTEGER)"))
+                ->join('puertos', 'puertos.id', '=', DB::raw("CAST(resp_formularios.json->>'puerto_id' AS INTEGER)"))
+                ->join('plantas', 'plantas.id', '=', DB::raw("CAST(resp_formularios.json->>'planta_id' AS INTEGER)"))
+                ->join('personas', 'personas.id', '=', DB::raw("CAST(resp_formularios.json->>'persona_id' AS INTEGER)"))                 
+                ->where('resp_formularios.id', 44)
+                ->groupBy('resp_formularios.id', 'naves.nombre', 'puertos.nombre', 'plantas.nombre', 
+                'persona', 'resp_formularios.enabled', 'resp_formularios.created_at')
+                ->get();
+                */
 
-        return response()->json($resp ,201);
+                $resp = RespFormulario::select(
+                    'resp_formularios.id',
+                    'naves.nombre as nave',
+                    'puertos.nombre as puerto',
+                    'plantas.nombre as planta',
+                    DB::raw("CONCAT(personas.nombre, ' ', personas.apellido) AS persona"),
+                    'resp_formularios.enabled',
+                    'resp_formularios.created_at'
+                )
+                ->where('resp_formularios.formulario_id', $formularioId)
+                ->join('naves', 'naves.id', '=', DB::raw("CAST(resp_formularios.json->>'nave_id' AS INTEGER)"))
+                ->join('puertos', 'puertos.id', '=', DB::raw("CAST(resp_formularios.json->>'puerto_id' AS INTEGER)"))
+                ->join('plantas', 'plantas.id', '=', DB::raw("CAST(resp_formularios.json->>'planta_id' AS INTEGER)"))
+                ->join('personas', 'personas.id', '=', DB::raw("CAST(resp_formularios.json->>'persona_id' AS INTEGER)"))                 
+                ->where('resp_formularios.id', 44)
+                
+                ->get();
+
+                $results = RespFormulario::select('resp_formularios.id', 
+                                                DB::raw("CAST(jsonb_array_elements_text(resp_formularios.json->'especieobjetivo_id') AS INTEGER) AS especieobjetivo_id"))
+                                                ->where('formulario_id', 1)
+                                                ->join('especies', 'especies.id', '=', DB::raw("CAST(jsonb_array_elements_text(resp_formularios.json->'especieobjetivo_id') AS INTEGER)"))
+                                                ->get();
+
+                
+
+                return response()->json([$resp,$results] ,201);
+            }else{
+            
+                    $resp= RespFormulario::select('resp_formularios.id','formularios.titulo',
+                                                    'resp_formularios.enabled','resp_formularios.created_at')
+                                                ->join('formularios','formularios.id','=','resp_formularios.formulario_id')
+                                                ->get();
+                    return response()->json($resp ,201);
+            }
+        }catch(Exception $e){
+                return response()->json([
+                    'success' => false,
+                    'message' => $e->getMessage()
+                ],500);
+        }
     }
 
     public function Create(Request $request){
         
         try{
-        $data = (array)json_decode($request->input('data'));
-        //$data = $request->all();
-        //$file2= $request2->file('imagen');
-        $file = $request->file('imagen');
+        $data = (array)json_decode($request->input('data'));        
+        
+        //CALCULOS DE MEDIDAS DE TENDENCIA CENTRAL, MEDIA, MODA Y PORCENTAJE DE TALLAS MENORES A
+        if(isset($data['analisis']) && count($data['analisis']) > 0){
+            $data['resultados'] = $this->Calculo($data['analisis']);
+        }else{
+            $data['resultados'] = [];
+        }
+
         $resp = new RespFormulario();
         $resp->formulario_id = $data['formulario_id'];
         $resp->enabled = true;
-        $resp->usuario_id = 1; //arreglar
+        $resp->usuario_id = 1; //ARREGLAR USUARIO
         unset($data['formulario_id']);
         unset($data['usuario_id']);
         unset($data['id']);
         unset($data['imagen']);
-        if(isset($data['analisis']) && count($data['analisis']) > 0){
-            //$resp->json = $data;
-            $resultados =[];
-            foreach ($data['analisis'] as $registro) {
+        $resp->json = $data;
+        
+
+        DB::beginTransaction();
+        $resp->save();
+        $respuesta_id = $resp->id;
+
+        $file = $request->file('imagen');
+        if($file !=null){
+            $urls = $this->Upload([$file],$respuesta_id);        
+            if(!$urls){throw new Exception('Error en cargar archivos');}           
+            $storage= [];
+            foreach($urls as $url) {
+                $storage[] = [
+                    'url' => $url['URL'],
+                    'nombre' => $url['Nombre'],
+                    'respuesta_id' => $respuesta_id,
+                ];
+            }            
+            // Insertar todas las Compuestas en un lote
+            RespStorage::insert($storage);
+        }
+        DB::commit(); 
+
+        return response()->json([
+            "id" => $resp->id,
+            "msg"=> "Respuesta Ingresada",
+        ] ,201);
+        }catch(Exception $e){
+            DB::rollBack();
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ],500);
+        }
+    }
+
+    public function Upload($files, $respuestaId){
+        if ($files) {
+            $result = [];
+            // Crear un nombre de carpeta único
+            $folderName = 'muestreo_biologico_resp_id'.$respuestaId;
+    
+            foreach ($files as $file) {
+                // Obtener el nombre original del archivo
+                $fileName = $file->getClientOriginalName();
+                // Construir la ruta del archivo con la carpeta
+                $filePath = $folderName . '/' . $fileName;
+                // Subir archivo a Google Cloud Storage
+                $storage = new StorageClient([
+                    'projectId' => env('GOOGLE_CLOUD_PROJECT_ID'),
+                    'keyFilePath' => env('GOOGLE_CLOUD_KEY_FILE')
+                ]);
+    
+                $bucket = $storage->bucket(env('GOOGLE_CLOUD_STORAGE_BUCKET'));
+                $bucket->upload(
+                                fopen($file->getPathname(), 'r'),
+                                ['name' => $filePath]
+                                );    
+                // Obtener la URL firmada para el archivo
+                //$url = $object->signedUrl(new \DateTime('tomorrow'));
+                // Agregar la URL al array de URLs
+                 // Agregar el nombre del archivo y la URL al resultado
+                $result[] = ['Nombre' => $fileName, 'URL' => $filePath];
+            }
+            return $result;
+        } 
+        return false;
+    }
+
+    public function Get (int $id){
+        try{
+            $resp = RespFormulario::select('id','formulario_id','json')
+                                    ->where('id',$id)
+                                    ->with(['resp_storage' => function($query){
+                                        $query->select('nombre','respuesta_id');
+                                    }])                                  
+                                    ->first(); 
+                                
+            RespFormulario::find($id);
+            if (!$resp) {
+                throw new Exception('Respuesta no encontrada');
+            }
+            return response()->json($resp, 201);
+        }catch(Exception $e){
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ],500);
+        }
+    }
+
+    public function Update(Request $request){
+        try{
+            $data = (array)json_decode($request->input('data'));
+
+            $respEdit = RespFormulario::find($data['id']);
+            if (!$respEdit) {
+                throw new Exception('Respuesta no encontrada');
+            }
+            //CALCULOS DE MEDIDAS DE TENDENCIA CENTRAL, MEDIA, MODA Y PORCENTAJE DE TALLAS MENORES A
+            if(isset($data['analisis']) && count($data['analisis']) > 0){
+                $data['resultados'] = $this->Calculo($data['analisis']);
+            }else{
+                $data['resultados'] = [];
+            }
+
+            $respEdit->formulario_id = $data['formulario_id'];
+            $respEdit->enabled = true;
+            $respEdit->usuario_id = 1; //ARREGLAR USUARIO
+            unset($data['formulario_id']);
+            unset($data['usuario_id']);
+            unset($data['id']);
+            unset($data['imagen']);
+            $respEdit->json = $data;
+
+            DB::beginTransaction();
+            $respEdit->save();
+
+            $file = $request->file('imagen');
+            if($file !=null){
+                $urls = $this->Upload([$file],$respEdit->id);        
+                if(!$urls){throw new Exception('Error en cargar archivos');}           
+                $storage= [];
+                foreach($urls as $url) {
+                    $storage[] = [
+                        'url' => $url['URL'],
+                        'nombre' => $url['Nombre'],
+                        'respuesta_id' => $respEdit->id,
+                    ];
+                }            
+                // Insertar todas las Compuestas en un lote
+                RespStorage::insert($storage);
+            }
+
+            DB::commit();
+            
+            return response()->json([
+                "id" => $respEdit->id,
+                "msg"=> "Respuesta Actualizada",
+            ] ,201);
+
+        }catch(Exception $e){
+            DB::rollBack();
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ],500);
+        }
+    }  
+
+    public function Calculo($analisis){
+        $resultados =[];
+
+            foreach ($analisis as $registro) {
                 $especieId = $registro->especie_id;
                 $tallas[$especieId][] = $registro->talla;
                 $pesos[$especieId][] = $registro->peso;
@@ -82,81 +297,9 @@ class RespuestaController extends Controller
                     'integridad_media' => $integridadMedia,
                 ];
             }
-            $data['resultados'] = $resultados;
-        }else{
-            $data['resultados'] = [];
-        }
-        $resp->json = $data;
+            return $resultados;
 
-        DB::beginTransaction();
-        $resp->save();
-        $respuesta_id = $resp->id;
-
-        if($file !=null){
-            $urls = $this->Upload([$file],$respuesta_id);
-            
-            if(!$urls){throw new Exception('Error en cargar archivos');}
-            
-            $storage= [];
-            foreach($urls as $url) {
-                $storage[] = [
-                    'url' => $url['URL'],
-                    'nombre' => $url['Nombre'],
-                    'respuesta_id' => $respuesta_id,
-                ];
-            }            
-            // Insertar todas las Compuestas en un lote
-            RespStorage::insert($storage);
-        }
-        DB::commit(); 
-        return response()->json([
-            "id" => $resp->id,
-            "msg"=> "Respuesta Ingresada",
-        ] ,201);
-        }catch(Exception $e){
-            DB::rollBack();
-            return response()->json([
-                'success' => false,
-                'message' => $e->getMessage()
-            ],500);
-        }
     }
-
-    public function Upload($files, $respuestaId){
-        if ($files) {
-            $result = [];
-            // Crear un nombre de carpeta único
-            $folderName = 'muestreo_biologico_resp_id'.$respuestaId.'_' . uniqid();
-    
-            foreach ($files as $file) {
-                // Obtener el nombre original del archivo
-                $fileName = $file->getClientOriginalName();
-                // Construir la ruta del archivo con la carpeta
-                $filePath = $folderName . '/' . $fileName;
-                // Subir archivo a Google Cloud Storage
-                $storage = new StorageClient([
-                    'projectId' => env('GOOGLE_CLOUD_PROJECT_ID'),
-                    'keyFilePath' => env('GOOGLE_CLOUD_KEY_FILE')
-                ]);
-    
-                $bucket = $storage->bucket(env('GOOGLE_CLOUD_STORAGE_BUCKET'));
-                $bucket->upload(
-                                fopen($file->getPathname(), 'r'),
-                                ['name' => $filePath]
-                                );    
-                // Obtener la URL firmada para el archivo
-                //$url = $object->signedUrl(new \DateTime('tomorrow'));
-                // Agregar la URL al array de URLs
-                 // Agregar el nombre del archivo y la URL al resultado
-                $result[] = ['Nombre' => $fileName, 'URL' => $filePath];
-            }
-            return $result;
-        } 
-        return false;
-    }
-    /**
-     * Store a newly created resource in storage.
-     */
     public function Query(Request $request)
     {
         // Busqueda en un JSON
@@ -221,27 +364,4 @@ class RespuestaController extends Controller
         return response()->json($respuesta,201);
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
-    }
 }

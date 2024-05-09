@@ -12,6 +12,7 @@ class FlotaController extends Controller
     //
     public function getall($id = null){
 
+        //SOLO LAS FLOTAS HABILITADAS
         if(isset($id) && $id == 1){
             try{
                 $resp = Flota::select('id','nombre')
@@ -25,6 +26,7 @@ class FlotaController extends Controller
                     'message' => $e->getMessage()
                 ],500);
             }
+        //TODAS LAS FLOTAS
         }else{
             try{
                 $resp = Flota::select('id','nombre', 

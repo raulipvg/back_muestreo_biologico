@@ -61,4 +61,17 @@ class RespFormulario extends Model
 		return $this->belongsTo(Nave::class, 'json->>nave_id');
 
 	}
+
+	public function resp_storage()
+	{
+		return $this->hasMany(RespStorage::class, 'respuesta_id');
+	}
+
+
+	public function getNave()
+	{
+		$nave = DB::table('naves')->where('id', $this->json['nave_id'])->first();
+		return $nave;
+	}
+
 }
