@@ -74,7 +74,9 @@ class NaveController extends Controller
             $resp->save();
             DB::commit();
 
-            $resp = $resp->only(['id','nombre','enabled', 'updated_at']);
+            $resp->load('flota');
+            $resp->flota = $resp->flota->nombre;
+            $resp = $resp->only(['id','nombre','enabled', 'updated_at','flota']);
             //Log::info('Nave creada');
             return response()->json($resp, 201);
         }catch(Exception $e){
