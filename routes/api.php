@@ -129,6 +129,7 @@ Route::group(['prefix'=> '/respuesta'], function () {
     Route::post('/create',[RespuestaController::class,'Create'])->name('IngresarRespuesta');
     Route::post('/update',[RespuestaController::class,'Update'])->name('UpdateRespuesta');
     Route::get('/query',[RespuestaController::class,'Query'])->name('Query');
+    Route::post('/cambiarestado',[RespuestaController::class,'CambiarEstado'])->name('CambiarEstado');
 
 });
 

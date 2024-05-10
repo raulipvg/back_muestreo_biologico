@@ -346,6 +346,7 @@ class RespuestaController extends Controller
             return $resultados;
 
     }
+
     public function Query(Request $request)
     {
         // Busqueda en un JSON
@@ -408,6 +409,33 @@ class RespuestaController extends Controller
         */                          
 
         return response()->json($respuesta,201);
+    }
+
+    public function CambiarEstado(Request $request){
+        try{            
+            $respEdit = RespFormulario::find($request->id);
+            if (!$respEdit) {
+                throw new Exception('Respuesta no encontrada');
+            }
+            DB::beginTransaction();
+            RespFormulario::where('id', $request->id)
+                ->update([
+                    'enabled' => DB::raw('NOT enabled')
+                ]);
+            DB::commit();
+            //Log::info('Estado cambiado correctamente');
+            return response()->json([
+                'success' => true,
+                "msg"=> "Estado cambiado correctamente",
+            ] ,201);
+        }catch(Exception $e){
+            DB::rollBack();
+            // Log::error('Error al cambiar estado de respuesta',[$e]);
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ],500);
+        }
     }
 
 }
