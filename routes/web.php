@@ -20,14 +20,14 @@ Route::get('/', function () {
 
 //API LOGIN
 Route::group(['prefix'=> '/login'], function () {
-    Route::post('/',[LoginController::class,'InicioNormal'])->name('login');
-    Route::post('/register',[LoginController::class,'register'])->name('register');
-    
     //  RUTAS DE GOOGLE
     Route::get('/google/redirect', [LoginController::class, 'redirectToGoogle']);
     Route::get('/google/callback', [LoginController::class, 'handleGoogleCallback']);
     
+    
+    Route::post('/',[LoginController::class,'InicioNormal'])->name('login');
+    Route::post('/register',[LoginController::class,'register'])->name('register');
     // LOGOUT
-    Route::middleware('auth:sanctum')->post('/logout',[LoginController::class,'CerrarSesion'])->name('logout');
 });
 
+Route::middleware('auth:sanctum')->post('/logout',[LoginController::class,'CerrarSesion'])->name('logout');

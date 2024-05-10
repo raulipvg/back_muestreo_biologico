@@ -30,18 +30,77 @@ class LoginController extends Controller
         } else {
             $usuario = Usuario::where('username','=',$credentials['username'])->first();
 
-            if(!$usuario->enabled){
+            if(!$usuario || !$usuario->enabled){
                 auth()->logout();
                 return response()->json([
-                    'mensaje' => 'Usuario no autorizado'
+                    'error' => 'Error al iniciar sesión'
                 ],401);
             }
 
             $token = $usuario->createToken('auth_token');
 
+            $permisos = [
+                'clasificaciones'=>[
+                                   'p1' => true,
+                                   'p2' => false,
+                                   'p3' => true,
+                                   'p4' => false,
+                               ],
+                'departamentos'=>[
+                                   'p1' => false,
+                                   'p2' => true,
+                                   'p3' => false,
+                                   'p4' => true,
+                               ],
+                'especies'=>[
+                               'p1' => false,
+                               'p2' => true,
+                               'p3' => true,
+                               'p4' => false,
+                           ],
+                'flotas'=>[
+                           'p1' => true,
+                           'p2' => false,
+                           'p3' => false,
+                           'p4' => true,
+                           ],
+                'lugaresm'=>[
+                               'p1' => true,
+                               'p2' => true,
+                               'p3' => true,
+                               'p4' => true,
+                           ],
+                'naves'=>[
+                           'p1' => false,
+                           'p2' => false,
+                           'p3' => false,
+                           'p4' => false,
+                       ],
+                'personas'=>[
+                           'p1' => true,
+                           'p2' => true,
+                           'p3' => true,
+                           'p4' => true,
+                           ],
+                'plantas'=>[
+                           'p1' => true,
+                           'p2' => true,
+                           'p3' => true,
+                           'p4' => true,
+                           ],
+                'puertos'=>[
+                           'p1' => true,
+                           'p2' => true,
+                           'p3' => true,
+                           'p4' => true,
+                           ],
+               
+               ];
+
             return response()->json([
                 'usuario' => $usuario->only('username','email','updated_at'),
-                'token' => $token->plainTextToken
+                'token' => $token->plainTextToken,
+                'permisos' => json_encode($permisos)
             ],200);
             
         }
@@ -51,41 +110,95 @@ class LoginController extends Controller
     // Envía la solicitud a Google
     public function redirectToGoogle()
     {
-        if(Auth::check()) redirect()->intended(route('Solicitud'));
         return Socialite::driver('google')->redirect();
     }
 
     // Respuesta desde Google, iniciar sesión
     public function handleGoogleCallback()
     {
-        
-        $googleUser = Socialite::driver('google')->stateless()->user();
-        
-        $usuario = Usuario::where('email', $googleUser->getEmail());
+        $googleUser = Socialite::driver('google')->user();
+        $usuario = Usuario::where('email','=', $googleUser->getEmail())->first();
 
         if(!$usuario || !$usuario->enabled){
-            return redirect()->intended(env('FRONT_URL'),404)->with([
+            return response()->json([
                 'error' => 'Error al iniciar sesión'
-            ]);
-        }
-
-        if(!isset($usuario->google_id)){
-            $usuario->google_id = $googleUser->getId();
-            $usuario->save();
+            ],401);
         }
 
         Auth::login($usuario);
         $token = $usuario->createToken('auth_token');
+
+        $permisos = [
+                     'clasificaciones'=>[
+                                        'p1' => true,
+                                        'p2' => false,
+                                        'p3' => true,
+                                        'p4' => false,
+                                    ],
+                     'departamentos'=>[
+                                        'p1' => false,
+                                        'p2' => true,
+                                        'p3' => false,
+                                        'p4' => true,
+                                    ],
+                     'especies'=>[
+                                    'p1' => false,
+                                    'p2' => true,
+                                    'p3' => true,
+                                    'p4' => false,
+                                ],
+                     'flotas'=>[
+                                'p1' => true,
+                                'p2' => false,
+                                'p3' => false,
+                                'p4' => true,
+                                ],
+                     'lugaresm'=>[
+                                    'p1' => true,
+                                    'p2' => true,
+                                    'p3' => true,
+                                    'p4' => true,
+                                ],
+                     'naves'=>[
+                                'p1' => false,
+                                'p2' => false,
+                                'p3' => false,
+                                'p4' => false,
+                            ],
+                     'personas'=>[
+                                'p1' => true,
+                                'p2' => true,
+                                'p3' => true,
+                                'p4' => true,
+                                ],
+                     'plantas'=>[
+                                'p1' => true,
+                                'p2' => true,
+                                'p3' => true,
+                                'p4' => true,
+                                ],
+                     'puertos'=>[
+                                'p1' => true,
+                                'p2' => true,
+                                'p3' => true,
+                                'p4' => true,
+                                ],
+                    
+                    ];
         
-        return redirect()->intended(env('FRONT_URL'))->with([
+        return response()->json([
             'usuario'=>$usuario->only('username','email','updated_at'),
-            'token'=>$token->plainTextToken
-        ]);
+            'token'=>$token->plainTextToken,
+            'permisos' => json_encode($permisos)
+        ],200);
     }
 
     //Cierra la sesión de Auth
     public function CerrarSesion(Request $request){
         $request->user()->tokens()->delete();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
         return response()->json([
             'message' => 'Ha cerrado sesión'
         ],200);

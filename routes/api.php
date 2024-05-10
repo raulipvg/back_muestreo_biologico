@@ -133,17 +133,8 @@ Route::group(['prefix'=> '/respuesta'], function () {
 });
 
 /* LOGIN EN routes/web.php, ASÍ PUEDE CREAR/ACTUALIZAR EL TOKEN DE SESIÓN */
-Route::group(['prefix'=> '/login'], function () {
-    Route::post('/',[LoginController::class,'InicioNormal'])->name('login');
-    Route::post('/register',[LoginController::class,'register'])->name('register');
-    
-    //  RUTAS DE GOOGLE
-    Route::get('/google/redirect', [LoginController::class, 'redirectToGoogle']);
-    Route::get('/google/callback', [LoginController::class, 'handleGoogleCallback']);
-    
-});
 
-    // LOGOUT
-    Route::middleware('auth:sanctum')->post('/logout',[LoginController::class,'CerrarSesion'])->name('logout');
+
+
 
 Route::get('/resp',[RespuestaController::class,'Index']);
