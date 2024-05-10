@@ -90,9 +90,35 @@ class RespuestaController extends Controller
                     }
                     return $item;
                 });
-                                               // Obtener los nombres de las especies
+                $time_start = microtime(true);
+                $biologico_listar = DB::select("WITH respuesta_listar AS (
+                                                            SELECT 
+                                                                resp_formularios.id,
+                                                                naves.nombre AS nave,
+                                                                puertos.nombre AS puerto,
+                                                                plantas.nombre AS planta,
+                                                                CONCAT(personas.nombre, ' ', personas.apellido) AS persona,
+                                                                resp_formularios.enabled,
+                                                                resp_formularios.created_at,
+                                                                (
+                                                                    SELECT STRING_AGG(especies.nombre, ', ' ORDER BY especies.nombre) AS nombres_especies
+                                                                    FROM resp_formularios r
+                                                                    JOIN LATERAL jsonb_array_elements_text(r.json->'especieobjetivo_id') AS especieobjetivo_id ON true
+                                                                    JOIN especies ON especies.id = CAST(especieobjetivo_id AS INTEGER)
+                                                                    WHERE r.id = resp_formularios.id
+                                                                ) AS nombres_especies
+                                                            FROM resp_formularios
+                                                            JOIN naves ON naves.id = CAST(resp_formularios.json->>'nave_id' AS INTEGER)
+                                                            JOIN puertos ON puertos.id = CAST(resp_formularios.json->>'puerto_id' AS INTEGER)
+                                                            JOIN plantas ON plantas.id = CAST(resp_formularios.json->>'planta_id' AS INTEGER)
+                                                            JOIN personas ON personas.id = CAST(resp_formularios.json->>'persona_id' AS INTEGER)
+                                                            WHERE resp_formularios.formulario_id = ?
+                                                        )
+                                                SELECT * FROM respuesta_listar;",[1]);
+                $time_end = microtime(true);
+                $time = $time_end - $time_start;
 
-                return response()->json([$respWithSpecies] ,201);
+                return response()->json($biologico_listar ,201);
             }else{
             
                     $resp= RespFormulario::select('resp_formularios.id','formularios.titulo',
