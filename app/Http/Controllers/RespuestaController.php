@@ -467,7 +467,7 @@ class RespuestaController extends Controller
                                         FROM 
                                             resp_formularios
                                         WHERE 
-                                            formulario_id = 1
+                                            formulario_id = 1 AND enabled = true
                                     ) respuestas
                                     JOIN 
                                         especies ON respuestas.especie_id = especies.id

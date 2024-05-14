@@ -8,6 +8,7 @@ namespace App\Models;
 
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
@@ -113,4 +114,44 @@ class Usuario extends Authenticatable
             throw new ValidationException($validator);
         }
     }
+
+    public function grupoPrivilegios()
+	{
+        $query = DB::table('acc_usuario_grupos')
+                            ->join('grupos', 'grupos.id', '=', 'acc_usuario_grupos.grupo_id')                            
+                            ->where('acc_usuario_grupos.usuario_id', $this->id)
+                            ->where('acc_usuario_grupos.enabled', true)
+                            ->where('grupos.enabled', true);
+
+		$queryGrupoPrivilegios = $query->select([
+                                        'grupo_privilegios.privilegio_id',
+                                        DB::raw('bool_or(grupo_privilegios.privilegio1) as p1'),
+                                        DB::raw('bool_or(grupo_privilegios.privilegio2) as p2'),
+                                        DB::raw('bool_or(grupo_privilegios.privilegio3) as p3'),
+                                        DB::raw('bool_or(grupo_privilegios.privilegio4) as p4'),
+                                    ])
+                                    ->join('grupo_privilegios', 'grupo_privilegios.grupo_id', '=', 'grupos.id')
+                                    ->join('privilegio_maestros', 'privilegio_maestros.id', '=', 'grupo_privilegios.privilegio_id')
+                                    ->where('privilegio_maestros.enabled', true)
+                                    ->groupBy('grupo_privilegios.privilegio_id')
+                                    ->get();
+
+       
+        $queryAccesoFormGrupos = $query->select([
+                                            'acc_formulario_grupos.formulario_id',
+                                            DB::raw('bool_or(acc_formulario_grupos.privilegio5) as p5'),
+                                            DB::raw('bool_or(acc_formulario_grupos.privilegio6) as p6'),
+                                            DB::raw('bool_or(acc_formulario_grupos.privilegio7) as p7'),
+                                            DB::raw('bool_or(acc_formulario_grupos.privilegio8) as p8'),
+                                        ])
+                                        ->join('acc_formulario_grupos', 'acc_formulario_grupos.grupo_id', '=', 'grupos.id')
+                                        ->groupBy('acc_formulario_grupos.formulario_id')
+                                        ->get();
+        
+        
+        return [
+            'Privilegios' => $queryGrupoPrivilegios,
+            'Formularios' => $queryAccesoFormGrupos
+        ];
+	}
 }

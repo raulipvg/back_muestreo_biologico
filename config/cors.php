@@ -28,7 +28,7 @@ return [
     'exposed_headers' => [],
 
     'max_age' => 0,
-//PARA PRODUCCIÓN DEJAR EN TRUE
-    'supports_credentials' => false,
+    //PARA PRODUCCIÓN DEJAR EN TRUE
+    'supports_credentials' => true,
 
 ];

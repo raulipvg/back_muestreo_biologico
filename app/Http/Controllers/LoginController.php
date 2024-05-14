@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\GrupoProvilegio;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Usuario;
@@ -39,68 +40,15 @@ class LoginController extends Controller
 
             $token = $usuario->createToken('auth_token');
 
-            $permisos = [
-                'clasificaciones'=>[
-                                   'p1' => true,
-                                   'p2' => false,
-                                   'p3' => true,
-                                   'p4' => false,
-                               ],
-                'departamentos'=>[
-                                   'p1' => false,
-                                   'p2' => true,
-                                   'p3' => false,
-                                   'p4' => true,
-                               ],
-                'especies'=>[
-                               'p1' => false,
-                               'p2' => true,
-                               'p3' => true,
-                               'p4' => false,
-                           ],
-                'flotas'=>[
-                           'p1' => true,
-                           'p2' => false,
-                           'p3' => false,
-                           'p4' => true,
-                           ],
-                'lugaresm'=>[
-                               'p1' => true,
-                               'p2' => true,
-                               'p3' => true,
-                               'p4' => true,
-                           ],
-                'naves'=>[
-                           'p1' => false,
-                           'p2' => false,
-                           'p3' => false,
-                           'p4' => false,
-                       ],
-                'personas'=>[
-                           'p1' => true,
-                           'p2' => true,
-                           'p3' => true,
-                           'p4' => true,
-                           ],
-                'plantas'=>[
-                           'p1' => true,
-                           'p2' => true,
-                           'p3' => true,
-                           'p4' => true,
-                           ],
-                'puertos'=>[
-                           'p1' => true,
-                           'p2' => true,
-                           'p3' => true,
-                           'p4' => true,
-                           ],
-               
-               ];
+            $permisos = $usuario->grupoPrivilegios();
+
+            
 
             return response()->json([
                 'usuario' => $usuario->only('username','email','updated_at'),
                 'token' => $token->plainTextToken,
-                'permisos' => json_encode($permisos)
+                'permisosM' => json_encode($permisos['Privilegios']),
+                'permisosF'=> json_encode($permisos['Formularios'])
             ],200);
             
         }
@@ -128,6 +76,8 @@ class LoginController extends Controller
         Auth::login($usuario);
         $token = $usuario->createToken('auth_token');
 
+        $permisos = $usuario->grupoPrivilegios();
+       /*
         $permisos = [
                      'clasificaciones'=>[
                                         'p1' => true,
@@ -185,11 +135,12 @@ class LoginController extends Controller
                                 ],
                     
                     ];
-        
+        */
         return response()->json([
             'usuario'=>$usuario->only('username','email','updated_at'),
             'token'=>$token->plainTextToken,
-            'permisos' => json_encode($permisos)
+            'permisosM' => json_encode($permisos),
+            'permisosF' => json_encode($permisos)
         ],200);
     }
 
