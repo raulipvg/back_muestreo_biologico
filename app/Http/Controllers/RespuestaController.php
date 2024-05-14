@@ -72,6 +72,7 @@ class RespuestaController extends Controller
                                                 })
                                                 ->get();
                 */
+                /*
                 $results = DB::select("WITH extracted_especieobjetivo_ids AS (
                                             SELECT resp_formularios.id, CAST(jsonb_array_elements_text(resp_formularios.json->'especieobjetivo_id') AS INTEGER) AS especieobjetivo_id
                                             FROM resp_formularios
@@ -90,7 +91,8 @@ class RespuestaController extends Controller
                     }
                     return $item;
                 });
-                $time_start = microtime(true);
+                */
+                //$time_start = microtime(true);
                 $biologico_listar = DB::select("WITH respuesta_listar AS (
                                                             SELECT 
                                                                 resp_formularios.id,
@@ -114,9 +116,9 @@ class RespuestaController extends Controller
                                                             JOIN personas ON personas.id = CAST(resp_formularios.json->>'persona_id' AS INTEGER)
                                                             WHERE resp_formularios.formulario_id = ?
                                                         )
-                                                SELECT * FROM respuesta_listar;",[1]);
-                $time_end = microtime(true);
-                $time = $time_end - $time_start;
+                                                SELECT * FROM respuesta_listar;",[1]); //formulario_id = 1 -> BIOLOGICO
+                //$time_end = microtime(true);
+                //$time = $time_end - $time_start;
 
                 return response()->json($biologico_listar ,201);
             }else{
@@ -436,6 +438,52 @@ class RespuestaController extends Controller
                 'message' => $e->getMessage()
             ],500);
         }
+    }
+
+    public function MedidasTendenciaCentral(){
+        try{
+            //formulario ID = 1 -> BIOLOGICO
+            
+            $respuesta = DB::select("SELECT
+                                        respuestas.respuesta_id,
+                                        to_char(fecha_analisis, 'DD-MM-YYYY HH24:MI') AS fecha_analisis,
+                                        especies.nombre AS nombre_especie,
+                                        respuestas.peso_media,
+                                        respuestas.talla_moda,
+                                        respuestas.talla_media,
+                                        respuestas.porc_menor_a,
+                                        respuestas.integridad_media
+                                    FROM (
+                                        SELECT
+                                            id as respuesta_id,
+                                            formulario_id,
+                                            created_at as fecha_analisis,
+                                            (jsonb_array_elements(json->'resultados')->>'especie_id')::int AS especie_id,
+                                            (jsonb_array_elements(json->'resultados')->>'peso_media')::numeric AS peso_media,
+                                            (jsonb_array_elements(json->'resultados')->'talla_moda')::jsonb AS talla_moda,
+                                            (jsonb_array_elements(json->'resultados')->>'talla_media')::numeric AS talla_media,
+                                            (jsonb_array_elements(json->'resultados')->>'porc_menor_a')::numeric AS porc_menor_a,
+                                            (jsonb_array_elements(json->'resultados')->>'integridad_media')::numeric AS integridad_media
+                                        FROM 
+                                            resp_formularios
+                                        WHERE 
+                                            formulario_id = 1
+                                    ) respuestas
+                                    JOIN 
+                                        especies ON respuestas.especie_id = especies.id
+                                    ORDER BY fecha_analisis DESC;"    
+                                    );
+
+
+            return response()->json($respuesta,201);
+
+        }catch(Exception $e){
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ],500);
+        }
+
     }
 
 }

@@ -130,7 +130,7 @@ Route::group(['prefix'=> '/respuesta'], function () {
     Route::post('/update',[RespuestaController::class,'Update'])->name('UpdateRespuesta');
     Route::get('/query',[RespuestaController::class,'Query'])->name('Query');
     Route::post('/cambiarestado',[RespuestaController::class,'CambiarEstado'])->name('CambiarEstado');
-
+    Route::get('/metricas',[RespuestaController::class,'MedidasTendenciaCentral'])->name('Medidas');
 });
 
 /* LOGIN EN routes/web.php, ASÍ PUEDE CREAR/ACTUALIZAR EL TOKEN DE SESIÓN */
