@@ -145,4 +145,12 @@ class FormularioController extends Controller
         ],201);
     }
 
+    public function formulariosEnabled(){
+        $formularios = Formulario::select('id','enabled')->orderBy('id','ASC')->get();
+
+        return response()->json(
+            $formularios
+        );
+    }
+
 }
