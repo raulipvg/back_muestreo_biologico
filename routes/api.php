@@ -30,6 +30,8 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
+//Proteger las rutas con middleware('auth:sanctum') para exigir autenticación
+
 //API MANTEMIENTO FORMULARIO
 Route::group(['prefix'=> '/formulario'], function () {
     Route::get('/getall',[FormularioController::class,'getall'])->name('GetAll');

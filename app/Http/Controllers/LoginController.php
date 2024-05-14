@@ -25,34 +25,37 @@ class LoginController extends Controller
     
     public function InicioNormal(Request $request){
         $credentials = $request->only('username', 'password');
-        
-        if (!Auth::attempt($credentials)) {
-            return response()->json(['error' => 'Credenciales incorrectas'], 401);
-        } else {
-            $usuario = Usuario::where('username','=',$credentials['username'])->first();
 
-            if(!$usuario || !$usuario->enabled){
-                auth()->logout();
+        try{
+            if (!Auth::attempt($credentials)) {
+                session()->invalidate();
+                session()->regenerateToken();
+                return response()->json(['error' => 'Credenciales incorrectas'], 401);
+            } 
+            else {
+                $usuario = Usuario::where('username','=',$credentials['username'])->first();
+    
+                if(!$usuario || !$usuario->enabled){
+                    auth()->logout();
+                    return response()->json([
+                        'error' => 'Error al iniciar sesión'
+                    ],401);
+                }
+    
+                $token = $usuario->createToken('auth_token');
+                $permisos = $usuario->grupoPrivilegios();
                 return response()->json([
-                    'error' => 'Error al iniciar sesión'
-                ],401);
+                    'usuario' => $usuario->only('username','email','updated_at'),
+                    'token' => $token->plainTextToken,
+                    'permisosM' => json_encode($permisos['Privilegios']),
+                    'permisosF'=> json_encode($permisos['Formularios'])
+                ],200);
+                
             }
-
-            $token = $usuario->createToken('auth_token');
-
-            $permisos = $usuario->grupoPrivilegios();
-
-            
-
-            return response()->json([
-                'usuario' => $usuario->only('username','email','updated_at'),
-                'token' => $token->plainTextToken,
-                'permisosM' => json_encode($permisos['Privilegios']),
-                'permisosF'=> json_encode($permisos['Formularios'])
-            ],200);
-            
+        }catch(Exception $e){
+            session()->invalidate();
+            return response()->json(['error' => 'Credenciales incorrectas'], 401);
         }
-
     }
 
     // Envía la solicitud a Google
@@ -77,65 +80,6 @@ class LoginController extends Controller
         $token = $usuario->createToken('auth_token');
 
         $permisos = $usuario->grupoPrivilegios();
-       /*
-        $permisos = [
-                     'clasificaciones'=>[
-                                        'p1' => true,
-                                        'p2' => false,
-                                        'p3' => true,
-                                        'p4' => false,
-                                    ],
-                     'departamentos'=>[
-                                        'p1' => false,
-                                        'p2' => true,
-                                        'p3' => false,
-                                        'p4' => true,
-                                    ],
-                     'especies'=>[
-                                    'p1' => false,
-                                    'p2' => true,
-                                    'p3' => true,
-                                    'p4' => false,
-                                ],
-                     'flotas'=>[
-                                'p1' => true,
-                                'p2' => false,
-                                'p3' => false,
-                                'p4' => true,
-                                ],
-                     'lugaresm'=>[
-                                    'p1' => true,
-                                    'p2' => true,
-                                    'p3' => true,
-                                    'p4' => true,
-                                ],
-                     'naves'=>[
-                                'p1' => false,
-                                'p2' => false,
-                                'p3' => false,
-                                'p4' => false,
-                            ],
-                     'personas'=>[
-                                'p1' => true,
-                                'p2' => true,
-                                'p3' => true,
-                                'p4' => true,
-                                ],
-                     'plantas'=>[
-                                'p1' => true,
-                                'p2' => true,
-                                'p3' => true,
-                                'p4' => true,
-                                ],
-                     'puertos'=>[
-                                'p1' => true,
-                                'p2' => true,
-                                'p3' => true,
-                                'p4' => true,
-                                ],
-                    
-                    ];
-        */
         return response()->json([
             'usuario'=>$usuario->only('username','email','updated_at'),
             'token'=>$token->plainTextToken,

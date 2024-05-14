@@ -124,7 +124,7 @@ class Usuario extends Authenticatable
                             ->where('grupos.enabled', true);
 
 		$queryGrupoPrivilegios = $query->select([
-                                        'grupo_privilegios.privilegio_id',
+                                        'grupo_privilegios.privilegio_id as p_id',
                                         DB::raw('bool_or(grupo_privilegios.privilegio1) as p1'),
                                         DB::raw('bool_or(grupo_privilegios.privilegio2) as p2'),
                                         DB::raw('bool_or(grupo_privilegios.privilegio3) as p3'),
@@ -138,7 +138,7 @@ class Usuario extends Authenticatable
 
        
         $queryAccesoFormGrupos = $query->select([
-                                            'acc_formulario_grupos.formulario_id',
+                                            'acc_formulario_grupos.formulario_id as f_id',
                                             DB::raw('bool_or(acc_formulario_grupos.privilegio5) as p5'),
                                             DB::raw('bool_or(acc_formulario_grupos.privilegio6) as p6'),
                                             DB::raw('bool_or(acc_formulario_grupos.privilegio7) as p7'),
