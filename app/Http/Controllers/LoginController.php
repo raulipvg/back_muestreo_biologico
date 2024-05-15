@@ -24,7 +24,7 @@ class LoginController extends Controller
     }
     
     public function InicioNormal(Request $request){
-        $credentials = $request->only('username', 'password');
+        $credentials = $request->only('email', 'password');
 
         try{
             if (!Auth::attempt($credentials)) {
@@ -33,7 +33,7 @@ class LoginController extends Controller
                 return response()->json(['error' => 'Credenciales incorrectas'], 401);
             } 
             else {
-                $usuario = Usuario::where('username','=',$credentials['username'])->first();
+                $usuario = Usuario::where('email','=',$credentials['email'])->first();
     
                 if(!$usuario || !$usuario->enabled){
                     auth()->logout();

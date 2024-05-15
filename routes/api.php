@@ -122,6 +122,7 @@ Route::group(['prefix'=> '/persona'], function () {
     Route::post('/create',[PersonaController::class,'create'])->name('Create');
     Route::post('/update',[PersonaController::class,'update'])->name('Update');
     Route::post('/cambiarestado',[PersonaController::class,'cambiarestado'])->name('CambiarEstado');
+    Route::get('/getuser',[PersonaController::class,'getUserByToken'])->name('GetUserByToken');
 });
 
 //API MANTENIMIENTO RESPUESTA

@@ -147,4 +147,18 @@ class PersonaController extends Controller
             ],500);
         }
     }
+
+    public function getUserByToken(Request $request){
+        
+        $permisos = $request->user()->grupoPrivilegios();
+        return response()->json([
+            'usuario' => [
+                'username' => $request->user()->username,
+                'email' => $request->user()->email,
+                'updated_at' => $request->user()->updated_at,
+            ],
+            'permisosM' => json_encode($permisos),
+            'permisosF' => json_encode($permisos)
+        ],200);
+    }
 }
