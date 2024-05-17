@@ -83,8 +83,8 @@ class LoginController extends Controller
         return response()->json([
             'usuario'=>$usuario->only('username','email','updated_at'),
             'token'=>$token->plainTextToken,
-            'permisosM' => json_encode($permisos),
-            'permisosF' => json_encode($permisos)
+            'permisosM' => json_encode($permisos['Privilegios']),
+            'permisosF'=> json_encode($permisos['Formularios'])
         ],200);
     }
 

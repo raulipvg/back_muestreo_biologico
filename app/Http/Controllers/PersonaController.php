@@ -149,16 +149,25 @@ class PersonaController extends Controller
     }
 
     public function getUserByToken(Request $request){
-        
-        $permisos = $request->user()->grupoPrivilegios();
+        $usuario = $request->user();
+        $permisos = $usuario->grupoPrivilegios();
+        $cookieParts = explode(';', $request->header('cookie'));
+        $cookiesArray = [];
+        foreach ($cookieParts as $part) {
+            parse_str($part, $temp);
+            $cookiesArray = array_merge($cookiesArray, $temp);
+            if(isset($cookiesArray['userToken'])) break;
+        }
+        if(!isset($token)) $token = 'undefined';
         return response()->json([
             'usuario' => [
-                'username' => $request->user()->username,
-                'email' => $request->user()->email,
-                'updated_at' => $request->user()->updated_at,
+                'username' => $usuario->username,
+                'email' => $usuario->email,
+                'updated_at' => $usuario->updated_at,
             ],
-            'permisosM' => json_encode($permisos),
-            'permisosF' => json_encode($permisos)
+            'permisosM' => json_encode($permisos['Privilegios']),
+            'permisosF'=> json_encode($permisos['Formularios']),
+            'token' => $cookiesArray['userToken']
         ],200);
     }
 }
