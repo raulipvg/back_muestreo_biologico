@@ -152,7 +152,7 @@ class RespuestaController extends Controller
         $resp = new RespFormulario();
         $resp->formulario_id = $data['formulario_id'];
         $resp->enabled = true;
-        $resp->usuario_id = 1; //ARREGLAR USUARIO
+        $resp->usuario_id = $request->user()->id; //ARREGLAR USUARIO
         unset($data['formulario_id']);
         unset($data['usuario_id']);
         unset($data['id']);
@@ -266,7 +266,7 @@ class RespuestaController extends Controller
 
             $respEdit->formulario_id = $data['formulario_id'];
             $respEdit->enabled = true;
-            $respEdit->usuario_id = 1; //ARREGLAR USUARIO
+            $respEdit->usuario_id = $request->user()->id; //ARREGLAR USUARIO
             unset($data['formulario_id']);
             unset($data['usuario_id']);
             unset($data['id']);
