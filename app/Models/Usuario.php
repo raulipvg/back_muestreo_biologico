@@ -124,16 +124,16 @@ class Usuario extends Authenticatable
                             ->where('grupos.enabled', true);
 
 		$queryGrupoPrivilegios = $query->select([
-                                        'grupo_privilegios.privilegio_id as p_id',
-                                        DB::raw('bool_or(grupo_privilegios.privilegio1) as p1'),
-                                        DB::raw('bool_or(grupo_privilegios.privilegio2) as p2'),
-                                        DB::raw('bool_or(grupo_privilegios.privilegio3) as p3'),
-                                        DB::raw('bool_or(grupo_privilegios.privilegio4) as p4'),
+                                        'acc_grupo_privilegios.privilegio_id as p_id',
+                                        DB::raw('bool_or(acc_grupo_privilegios.privilegio1) as p1'),
+                                        DB::raw('bool_or(acc_grupo_privilegios.privilegio2) as p2'),
+                                        DB::raw('bool_or(acc_grupo_privilegios.privilegio3) as p3'),
+                                        DB::raw('bool_or(acc_grupo_privilegios.privilegio4) as p4'),
                                     ])
-                                    ->join('grupo_privilegios', 'grupo_privilegios.grupo_id', '=', 'grupos.id')
-                                    ->join('privilegio_maestros', 'privilegio_maestros.id', '=', 'grupo_privilegios.privilegio_id')
+                                    ->join('acc_grupo_privilegios', 'acc_grupo_privilegios.grupo_id', '=', 'grupos.id')
+                                    ->join('privilegio_maestros', 'privilegio_maestros.id', '=', 'acc_grupo_privilegios.privilegio_id')
                                     ->where('privilegio_maestros.enabled', true)
-                                    ->groupBy('grupo_privilegios.privilegio_id')
+                                    ->groupBy('acc_grupo_privilegios.privilegio_id')
                                     ->get();
 
        

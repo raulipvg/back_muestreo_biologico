@@ -26,7 +26,7 @@ use Illuminate\Database\Eloquent\Model;
  */
 class GrupoProvilegio extends Model
 {
-	protected $table = 'grupo_privilegios';
+	protected $table = 'acc_grupo_privilegios';
 	protected $primaryKey = 'id';
 	public $incrementing = true;
 	public $timestamps = true;
