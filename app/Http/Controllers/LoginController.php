@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\GrupoProvilegio;
+use App\Models\Persona;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Usuario;
@@ -43,9 +44,18 @@ class LoginController extends Controller
                 }
     
                 $token = $usuario->createToken('auth_token');
+                $persona = Persona::select('nombre','apellido')
+                         ->where('id','=',$usuario->persona_id)
+                         ->first();
                 $permisos = $usuario->grupoPrivilegios();
                 return response()->json([
-                    'usuario' => $usuario->only('username','email','updated_at'),
+                    'usuario' => [
+                        'username' => $usuario->username,
+                        'email' => $usuario->email,
+                        'updated_at' => $usuario->updated_at,
+                        'firstname' => $persona['nombre'],
+                        'lastname' => $persona['apellido']
+                    ],
                     'token' => $token->plainTextToken,
                     'permisosM' => json_encode($permisos['Privilegios']),
                     'permisosF'=> json_encode($permisos['Formularios'])
@@ -78,10 +88,18 @@ class LoginController extends Controller
 
         Auth::login($usuario);
         $token = $usuario->createToken('auth_token');
-
+        $persona = Persona::select('nombre','apellido')
+                         ->where('id','=',$usuario->persona_id)
+                         ->first();
         $permisos = $usuario->grupoPrivilegios();
         return response()->json([
-            'usuario'=>$usuario->only('username','email','updated_at'),
+            'usuario' => [
+                'username' => $usuario->username,
+                'email' => $usuario->email,
+                'updated_at' => $usuario->updated_at,
+                'firstname' => $persona['nombre'],
+                'lastname' => $persona['apellido']
+            ],
             'token'=>$token->plainTextToken,
             'permisosM' => json_encode($permisos['Privilegios']),
             'permisosF'=> json_encode($permisos['Formularios'])

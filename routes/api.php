@@ -33,7 +33,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 //Proteger las rutas con middleware('auth:sanctum') para exigir autenticación
 
 //API MANTEMIENTO FORMULARIO
-Route::group(['prefix'=> '/formulario'], function () {
+Route::group(['prefix'=> '/formulario','middleware' => 'auth:sanctum'], function () {
     Route::get('/getall',[FormularioController::class,'getall'])->name('GetAll');
     Route::get('/get/{id}',[FormularioController::class,'get'])->name('GetId');
     Route::post('/update',[FormularioController::class,'update'])->name('Update');
@@ -44,7 +44,7 @@ Route::group(['prefix'=> '/formulario'], function () {
 });
 
 //API MANTEMIENTO ESPECIE
-Route::group(['prefix'=> '/especie'], function () {
+Route::group(['prefix'=> '/especie','middleware' => 'auth:sanctum'], function () {
     Route::get('/getall/{id?}',[EspecieController::class,'getall'])->name('GetAll');
     Route::get('/get/{id}',[EspecieController::class,'get'])->name('GetId');
     Route::post('/create',[EspecieController::class,'create'])->name('Create');
@@ -53,7 +53,7 @@ Route::group(['prefix'=> '/especie'], function () {
 });
 
 //API MANTEMIENTO NAVE
-Route::group(['prefix'=> '/nave'], function () {
+Route::group(['prefix'=> '/nave','middleware' => 'auth:sanctum'], function () {
     Route::get('/getall/{id?}',[NaveController::class,'getall'])->name('GetAll');
     Route::get('/get/{id}',[NaveController::class,'get'])->name('GetId');
     Route::post('/create',[NaveController::class,'create'])->name('Create');
@@ -62,7 +62,7 @@ Route::group(['prefix'=> '/nave'], function () {
 });
 
 //API MANTEMIENTO PLANTA
-Route::group(['prefix'=> '/planta'], function () {
+Route::group(['prefix'=> '/planta','middleware' => 'auth:sanctum'], function () {
     Route::get('/getall/{id?}',[PlantaController::class,'getall'])->name('GetAll');
     Route::get('/get/{id}',[PlantaController::class,'get'])->name('GetId');
     Route::post('/create',[PlantaController::class,'create'])->name('Create');
@@ -71,7 +71,7 @@ Route::group(['prefix'=> '/planta'], function () {
 });
 
 //API MANTENIMIENTO LUGARM
-Route::group(['prefix'=> '/lugarm'], function () {
+Route::group(['prefix'=> '/lugarm','middleware' => 'auth:sanctum'], function () {
     Route::get('/getall/{id?}',[LugarMController::class,'getall'])->name('GetAll');
     Route::get('/get/{id}',[LugarMController::class,'get'])->name('GetId');
     Route::post('/create',[LugarMController::class,'create'])->name('Create');
@@ -80,7 +80,7 @@ Route::group(['prefix'=> '/lugarm'], function () {
 });
 
 //API MANTENIMIENTO CLASIFICACION
-Route::group(['prefix'=> '/clasificacion'], function () {
+Route::group(['prefix'=> '/clasificacion','middleware' => 'auth:sanctum'], function () {
     Route::get('/getall/{id?}',[ClasificacionController::class,'getall'])->name('GetAll');
     Route::get('/get/{id}',[ClasificacionController::class,'get'])->name('GetId');
     Route::post('/create',[ClasificacionController::class,'create'])->name('Create');
@@ -89,7 +89,7 @@ Route::group(['prefix'=> '/clasificacion'], function () {
 });
 
 //API MANTENIMIENTO FLOTA
-Route::group(['prefix'=> '/flota'], function () {
+Route::group(['prefix'=> '/flota','middleware' => 'auth:sanctum'], function () {
     Route::get('/getall/{id?}',[FlotaController::class,'getall'])->name('GetAll');
     Route::get('/get/{id}',[FlotaController::class,'get'])->name('GetId');
     Route::post('/create',[FlotaController::class,'create'])->name('Create');
@@ -98,7 +98,7 @@ Route::group(['prefix'=> '/flota'], function () {
 });
 
 //API MANTENIMIENTO PUERTO 
-Route::group(['prefix'=> '/puerto'], function () {
+Route::group(['prefix'=> '/puerto','middleware' => 'auth:sanctum'], function () {
     Route::get('/getall/{id?}',[PuertoController::class,'getall'])->name('GetAll');
     Route::get('/get/{id}',[PuertoController::class,'get'])->name('GetId');
     Route::post('/create',[PuertoController::class,'create'])->name('Create');
@@ -107,7 +107,7 @@ Route::group(['prefix'=> '/puerto'], function () {
 });
 
 //API MANTENIMIENTO DEPARTAMENTO
-Route::group(['prefix'=> '/departamento'], function () {
+Route::group(['prefix'=> '/departamento','middleware' => 'auth:sanctum'], function () {
     Route::get('/getall/{id?}',[DepartamentoController::class,'getall'])->name('GetAll');
     Route::get('/get/{id}',[DepartamentoController::class,'get'])->name('GetId');
     Route::post('/create',[DepartamentoController::class,'create'])->name('Create');
@@ -116,7 +116,7 @@ Route::group(['prefix'=> '/departamento'], function () {
 });
 
 //API MATENIMIENTO PERSONA 
-Route::group(['prefix'=> '/persona'], function () {
+Route::group(['prefix'=> '/persona','middleware' => 'auth:sanctum'], function () {
     Route::get('/getall/{id?}',[PersonaController::class,'getall'])->name('GetAll');
     Route::get('/get/{id}',[PersonaController::class,'get'])->name('GetId');
     Route::post('/create',[PersonaController::class,'create'])->name('Create');
@@ -126,7 +126,7 @@ Route::group(['prefix'=> '/persona'], function () {
 });
 
 //API MANTENIMIENTO RESPUESTA
-Route::group(['prefix'=> '/respuesta'], function () {
+Route::group(['prefix'=> '/respuesta','middleware' => 'auth:sanctum'], function () {
     Route::get('/getall/{id?}',[RespuestaController::class,'Index'])->name('GetAll');
     Route::get('/get/{id}',[RespuestaController::class,'Get'])->name('GetId');
     Route::get('/resp',[RespuestaController::class,'Index'])->name('Respuesta');

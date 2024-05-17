@@ -159,11 +159,16 @@ class PersonaController extends Controller
             if(isset($cookiesArray['userToken'])) break;
         }
         if(!isset($token)) $token = 'undefined';
+        $persona = Persona::select('nombre','apellido')
+                         ->where('id','=',$usuario->persona_id)
+                         ->first();
         return response()->json([
             'usuario' => [
                 'username' => $usuario->username,
                 'email' => $usuario->email,
                 'updated_at' => $usuario->updated_at,
+                'firstname' => $persona['nombre'],
+                'lastname' => $persona['apellido']
             ],
             'permisosM' => json_encode($permisos['Privilegios']),
             'permisosF'=> json_encode($permisos['Formularios']),
