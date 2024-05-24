@@ -21,8 +21,8 @@ Route::get('/', function () {
 //API LOGIN
 Route::group(['prefix'=> '/login'], function () {
     //  RUTAS DE GOOGLE
-    Route::get('/google/redirect', [LoginController::class, 'redirectToGoogle']);
-    Route::get('/google/callback', [LoginController::class, 'handleGoogleCallback']);
+    //Route::get('/google/redirect', [LoginController::class, 'redirectToGoogle']);
+    //Route::get('/google/callback', [LoginController::class, 'handleGoogleCallback']);
     
     
     Route::post('/',[LoginController::class,'InicioNormal'])->name('login');

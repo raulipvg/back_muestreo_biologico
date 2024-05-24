@@ -68,6 +68,7 @@ class LoginController extends Controller
         }
     }
 
+    /*
     // Envía la solicitud a Google
     public function redirectToGoogle()
     {
@@ -105,7 +106,8 @@ class LoginController extends Controller
             'permisosF'=> json_encode($permisos['Formularios'])
         ],200);
     }
-
+    */
+    
     //Cierra la sesión de Auth
     public function CerrarSesion(Request $request){
         $request->user()->tokens()->delete();

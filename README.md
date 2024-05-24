@@ -42,10 +42,6 @@ Se recomienda duplicar el archivo ``.exv.example`` y renombrar el archivo duplic
     18 | DB_USERNAME=postgres                    <- username de la base de datos
     19 | DB_PASSWORD=                            <- contraseña de la base de datos
     ...
-    66 | GOOGLE_CLIENT_ID=                       <- Id del cliente de Google
-    67 | GOOGLE_CLIENT_SECRET=                   <- Secreto del cliente de Google 
-    68 | GOOGLE_REDIRECT_URI=                    <- URL del callback para Google
-    ...
     70 | GOOGLE_CLOUD_PROJECT_ID=                <- Id del proyecto de Google
     71 | GOOGLE_CLOUD_KEY_FILE=                  <- Ruta ABSOLUTA del archivo json de credencial de Google
     72 | GOOGLE_CLOUD_STORAGE_BUCKET=            <- Nombre del Bucket de Google Storage
@@ -53,15 +49,6 @@ Se recomienda duplicar el archivo ``.exv.example`` y renombrar el archivo duplic
 La variable ``FRONTEND_URL`` corresponde a un ``origin``, por lo tanto, no debe tener algún caracter después del puerto (en caso que se especifique el puerto).
 
 La variable ``SESSION_DOMAIN`` debe ser solo un ``top-level domain``. Si se generan conflictos con la API (respuestas 401), verificar esta variable.
-
-Recordar que la variable ``GOOGLE_REDIRECT_URI`` debe ser el mismo valor ingresado en la App de Google Cloud, en el cliente de ``OAuth``. El valor es del componente de Angular que recibe la información de google y la envía al frontend. La ruta es ``(frontend URL)/google/callback``. El flujo de información es el siguiente:
-
-    Frontend llama a la ruta de redirección a Google 
-    -> El usuario se registra en Google 
-    -> Google envía al frontend la información del inicio de sesión 
-    -> frontend envía al backend para verificar y autenticar.
-    -> backend veririca, autentica, si es exitoso envía los datos del usuario, sino envía HTTP 401
-    -> frontend redirecciona, si fue exitoso en backend permite entrar, sino vuelve al login
 
 ## Ejecutar
 
