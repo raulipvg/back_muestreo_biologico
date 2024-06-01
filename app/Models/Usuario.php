@@ -15,6 +15,8 @@ use Illuminate\Validation\ValidationException;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Tymon\JWTAuth\Contracts\JWTSubject;
+use Tymon\JWTAuth\Contracts\Providers\JWT;
 
 /**
  * Class Usuario
@@ -32,7 +34,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  * @property Persona $persona
  * @package App\Models
  */
-class Usuario extends Authenticatable
+class Usuario extends Authenticatable implements JWTSubject
 {
     use HasApiTokens, HasFactory;
 	protected $table = 'usuarios';
@@ -154,4 +156,12 @@ class Usuario extends Authenticatable
             'Formularios' => $queryAccesoFormGrupos
         ];
 	}
+
+    public function getJWTIdentifier(){
+        return $this->getKey();
+    }
+
+    public function getJWTCustomClaims(){
+        return [];
+    }
 }

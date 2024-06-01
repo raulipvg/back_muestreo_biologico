@@ -30,4 +30,6 @@ Route::group(['prefix'=> '/login'], function () {
     // LOGOUT
 });
 
+
+
 Route::middleware('auth:sanctum')->post('/logout',[LoginController::class,'CerrarSesion'])->name('logout');

@@ -142,4 +142,12 @@ Route::group(['prefix'=> '/respuesta','middleware' => 'auth:sanctum'], function 
 
 
 
-Route::get('/resp',[RespuestaController::class,'Index']);
+
+//Route::get('/resp',[RespuestaController::class,'Index']);
+
+Route::post('/login',[LoginController::class,'login'])->name('login');
+Route::get('/logout',[LoginController::class,'logout'])->name('logout');
+
+Route::group(['prefix'=> '/test','middleware' => 'jwt.verify'], function () {
+    Route::get('/resp',[RespuestaController::class,'Index'])->name('Respuesta');
+});
