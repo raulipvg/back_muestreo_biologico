@@ -33,7 +33,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 //Proteger las rutas con middleware('auth:sanctum') para exigir autenticación
 
 //API MANTEMIENTO FORMULARIO
-Route::group(['prefix'=> '/formulario','middleware' => 'auth:sanctum'], function () {
+Route::group(['prefix'=> '/formulario','middleware' => 'jwt.verify'], function () {
     Route::get('/getall',[FormularioController::class,'getall'])->name('GetAll');
     Route::get('/get/{id}',[FormularioController::class,'get'])->name('GetId');
     Route::post('/update',[FormularioController::class,'update'])->name('Update');
@@ -80,7 +80,7 @@ Route::group(['prefix'=> '/lugarm','middleware' => 'auth:sanctum'], function () 
 });
 
 //API MANTENIMIENTO CLASIFICACION
-Route::group(['prefix'=> '/clasificacion','middleware' => 'auth:sanctum'], function () {
+Route::group(['prefix'=> '/clasificacion','middleware' => 'jwt.verify'], function () {
     Route::get('/getall/{id?}',[ClasificacionController::class,'getall'])->name('GetAll');
     Route::get('/get/{id}',[ClasificacionController::class,'get'])->name('GetId');
     Route::post('/create',[ClasificacionController::class,'create'])->name('Create');
@@ -116,7 +116,7 @@ Route::group(['prefix'=> '/departamento','middleware' => 'auth:sanctum'], functi
 });
 
 //API MATENIMIENTO PERSONA 
-Route::group(['prefix'=> '/persona','middleware' => 'auth:sanctum'], function () {
+Route::group(['prefix'=> '/persona','middleware' => 'jwt.verify'], function () {
     Route::get('/getall/{id?}',[PersonaController::class,'getall'])->name('GetAll');
     Route::get('/get/{id}',[PersonaController::class,'get'])->name('GetId');
     Route::post('/create',[PersonaController::class,'create'])->name('Create');
@@ -137,16 +137,12 @@ Route::group(['prefix'=> '/respuesta','middleware' => 'auth:sanctum'], function 
     Route::get('/metricas',[RespuestaController::class,'MedidasTendenciaCentral'])->name('Medidas');
 });
 
-/* LOGIN EN routes/web.php, ASÍ PUEDE CREAR/ACTUALIZAR EL TOKEN DE SESIÓN */
-
-
-
-
 
 //Route::get('/resp',[RespuestaController::class,'Index']);
 
 Route::post('/login',[LoginController::class,'login'])->name('login');
-Route::get('/logout',[LoginController::class,'logout'])->name('logout');
+// Agregado el middleware, ya que un usuario no autenticado no podría hacer logout
+Route::post('/logout',[LoginController::class,'logout'])->middleware('jwt.verify');
 
 Route::group(['prefix'=> '/test','middleware' => 'jwt.verify'], function () {
     Route::get('/resp',[RespuestaController::class,'Index'])->name('Respuesta');

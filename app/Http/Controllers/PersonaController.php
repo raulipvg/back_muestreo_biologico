@@ -151,14 +151,10 @@ class PersonaController extends Controller
     public function getUserByToken(Request $request){
         $usuario = $request->user();
         $permisos = $usuario->grupoPrivilegios();
-        $cookieParts = explode(';', $request->header('cookie'));
-        $cookiesArray = [];
-        foreach ($cookieParts as $part) {
-            parse_str($part, $temp);
-            $cookiesArray = array_merge($cookiesArray, $temp);
-            if(isset($cookiesArray['userToken'])) break;
-        }
-        if(!isset($token)) $token = 'undefined';
+        $token = $request->header('Authorization');
+        if (strpos($token, 'Bearer ') === 0) {
+            $token = substr($token, 7); // Remove 7 characters ("Bearer ")
+          }
         $persona = Persona::select('nombre','apellido')
                          ->where('id','=',$usuario->persona_id)
                          ->first();
@@ -172,7 +168,7 @@ class PersonaController extends Controller
             ],
             'permisosM' => json_encode($permisos['Privilegios']),
             'permisosF'=> json_encode($permisos['Formularios']),
-            'token' => $cookiesArray['userToken']
+            'token' => $token
         ],200);
     }
 }

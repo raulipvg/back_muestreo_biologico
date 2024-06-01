@@ -1,8 +1,20 @@
 # ENTREGA - SPRINT 4
 # Backend sistema formularios
 
-Backend para el sistema de formularios y planillas. Requiere de ``php ^8.0``. Además, cuenta con los paquetes ``MathPHP``, ``Socialite`` y ``GoogleCloud\Storage``.
-Hay que considerar que tanto la API como el Frontend deben estar en el mismo nivel de dominio.
+Backend para el sistema de formularios y planillas. Requiere de ``php ^8.0``. Además, cuenta con los paquetes ``MathPHP``, ``Socialite``, ``GoogleCloud\Storage`` y ``Tymon\JWTAuth``.
+
+Se seleccionó ``Tymon\JWTAuth`` para manejar las autenticaciónes ya que no habrían problemas de CORS, ni problemas con las cookies como session y CSRF-TOKEN al estar en sitios distintos o distintos niveles de dominio.
+
+#### IMPORTANTE
+
+Hay que agregar `'middleware' => 'jwt.verify'` a las rutas para protejerlas con JWT. A medida que se vaya agregando el middleware probar con el frontend, enviando el token mediante el header `Authorization`.
+
+Hasta el momento, se aplicó el middleware a los grupos de url:
+- Formulario
+- Clasificacion
+- Persona
+
+Falta tomar una desición para saber cómo manejar la actualización de los token de usuarios, luego que estos expiren en el backend y sigan almacenados en el frontend.
 
 - Instalar
 - Base de datos
@@ -31,24 +43,28 @@ Para restaurar correctamente la base de datos ya existente, es necesario elimina
 
 Se recomienda duplicar el archivo ``.exv.example`` y renombrar el archivo duplicado a solo ``.env``, y realizar la siguientes modificaciones:
 
-     6 | FRONTEND_URL= http://localhost:4200     <- URL del frontend
-     7 | SESSION_DOMAIN=localhost                <- Solo el dominio, sin puertos ni protocolo
-     8 | SANCTUM_STATEFUL_DOMAINS=localhost:4200 <- Sólo el domino y el puerto (si especifica)
+     6 | FRONTEND_URL=http://localhost:4200      <- URL del frontend
     ...
-    14 | DB_CONNECTION=pgsql                     <- tipo de base de datos (pgsql)
-    15 | DB_HOST=127.0.0.1                       <- host de la base de datos
-    16 | DB_PORT=5432                            <- puerto de la base de datos
-    17 | DB_DATABASE=formularios                 <- nombre de la base de datos
-    18 | DB_USERNAME=postgres                    <- username de la base de datos
-    19 | DB_PASSWORD=                            <- contraseña de la base de datos
+    12 | DB_CONNECTION=pgsql                     <- tipo de base de datos (pgsql)
+    13 | DB_HOST=127.0.0.1                       <- host de la base de datos
+    14 | DB_PORT=5432                            <- puerto de la base de datos
+    15 | DB_DATABASE=formularios                 <- nombre de la base de datos
+    16 | DB_USERNAME=postgres                    <- username de la base de datos
+    17 | DB_PASSWORD=                            <- contraseña de la base de datos
     ...
-    70 | GOOGLE_CLOUD_PROJECT_ID=                <- Id del proyecto de Google
-    71 | GOOGLE_CLOUD_KEY_FILE=                  <- Ruta ABSOLUTA del archivo json de credencial de Google
-    72 | GOOGLE_CLOUD_STORAGE_BUCKET=            <- Nombre del Bucket de Google Storage
+    64 | GOOGLE_CLOUD_PROJECT_ID=                <- Id del proyecto de Google
+    65 | GOOGLE_CLOUD_KEY_FILE=                  <- Ruta ABSOLUTA del archivo json de credencial de Google
+    66 | GOOGLE_CLOUD_STORAGE_BUCKET=            <- Nombre del Bucket de Google Storage
 
-La variable ``FRONTEND_URL`` corresponde a un ``origin``, por lo tanto, no debe tener algún caracter después del puerto (en caso que se especifique el puerto).
+La variable ``FRONTEND_URL`` corresponde a un ``origin``, por lo tanto, no debe tener algún caracter después del puerto (en caso que se especifique el puerto). Sólo el esquema (``http://``/``https://``), el dominio completo que puede incluir subdominios (``localhost``) y el puerto si se especifica(``:4200``).
+Luego, se debe crear el secreto de JWT con el siguiente comando:
 
-La variable ``SESSION_DOMAIN`` debe ser solo un ``top-level domain``. Si se generan conflictos con la API (respuestas 401), verificar esta variable.
+    php artisan jwt:secret
+
+Que agregará la siguiente línea en .env, con un hash
+
+    ...
+    67 | JWT_SECRET= //hash//
 
 ## Ejecutar
 
@@ -60,17 +76,11 @@ y se ejecutará en http://localhost:8000.
 
 ## Errores frecuentes
 
-### HTTP 419:
-- Relacionado con CORS, verificar las variables de entorno ``FRONTEND_URL``, ``SESSION DOMAIN``, ``SANCTUM_STATEFUL_DOMAIN``.
-
-- Verificar en ``config/cors.php``:
-
-        32 | 'supports_credentials' => true,
-
 ### HTTP 401
 
 - Verificar los inicios de sesión. La API requiere de un inicio de sesión para que funcionen los endpoints, a excepción de los relacionados con el login.
-- Verificar ``SESSION DOMAIN`` sea sólo el dominio (sin esquema, puertos ni decoradores) y ``SANCTUM_STATEFUL_DOMAIN`` sea el dominio y el puerto si se especifica.
+- Verificar los permisos y uso de ``'middleware' => 'jwt.verify'`` en las rutas.
+- Verificar que se incluya el header ``Authorization`` en la solicitud, y que este tenga un token válido.
 
 ### HTTP 500
 
