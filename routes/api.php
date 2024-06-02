@@ -44,7 +44,7 @@ Route::group(['prefix'=> '/formulario','middleware' => 'jwt.verify'], function (
 });
 
 //API MANTEMIENTO ESPECIE
-Route::group(['prefix'=> '/especie','middleware' => 'auth:sanctum'], function () {
+Route::group(['prefix'=> '/especie','middleware' => 'jwt.verify'], function () {
     Route::get('/getall/{id?}',[EspecieController::class,'getall'])->name('GetAll');
     Route::get('/get/{id}',[EspecieController::class,'get'])->name('GetId');
     Route::post('/create',[EspecieController::class,'create'])->name('Create');
@@ -53,7 +53,7 @@ Route::group(['prefix'=> '/especie','middleware' => 'auth:sanctum'], function ()
 });
 
 //API MANTEMIENTO NAVE
-Route::group(['prefix'=> '/nave','middleware' => 'auth:sanctum'], function () {
+Route::group(['prefix'=> '/nave','middleware' => 'jwt.verify'], function () {
     Route::get('/getall/{id?}',[NaveController::class,'getall'])->name('GetAll');
     Route::get('/get/{id}',[NaveController::class,'get'])->name('GetId');
     Route::post('/create',[NaveController::class,'create'])->name('Create');
@@ -62,7 +62,7 @@ Route::group(['prefix'=> '/nave','middleware' => 'auth:sanctum'], function () {
 });
 
 //API MANTEMIENTO PLANTA
-Route::group(['prefix'=> '/planta','middleware' => 'auth:sanctum'], function () {
+Route::group(['prefix'=> '/planta','middleware' => 'jwt.verify'], function () {
     Route::get('/getall/{id?}',[PlantaController::class,'getall'])->name('GetAll');
     Route::get('/get/{id}',[PlantaController::class,'get'])->name('GetId');
     Route::post('/create',[PlantaController::class,'create'])->name('Create');
@@ -71,7 +71,7 @@ Route::group(['prefix'=> '/planta','middleware' => 'auth:sanctum'], function () 
 });
 
 //API MANTENIMIENTO LUGARM
-Route::group(['prefix'=> '/lugarm','middleware' => 'auth:sanctum'], function () {
+Route::group(['prefix'=> '/lugarm','middleware' => 'jwt.verify'], function () {
     Route::get('/getall/{id?}',[LugarMController::class,'getall'])->name('GetAll');
     Route::get('/get/{id}',[LugarMController::class,'get'])->name('GetId');
     Route::post('/create',[LugarMController::class,'create'])->name('Create');
@@ -89,7 +89,7 @@ Route::group(['prefix'=> '/clasificacion','middleware' => 'jwt.verify'], functio
 });
 
 //API MANTENIMIENTO FLOTA
-Route::group(['prefix'=> '/flota','middleware' => 'auth:sanctum'], function () {
+Route::group(['prefix'=> '/flota','middleware' => 'jwt.verify'], function () {
     Route::get('/getall/{id?}',[FlotaController::class,'getall'])->name('GetAll');
     Route::get('/get/{id}',[FlotaController::class,'get'])->name('GetId');
     Route::post('/create',[FlotaController::class,'create'])->name('Create');
@@ -98,7 +98,7 @@ Route::group(['prefix'=> '/flota','middleware' => 'auth:sanctum'], function () {
 });
 
 //API MANTENIMIENTO PUERTO 
-Route::group(['prefix'=> '/puerto','middleware' => 'auth:sanctum'], function () {
+Route::group(['prefix'=> '/puerto','middleware' => 'jwt.verify'], function () {
     Route::get('/getall/{id?}',[PuertoController::class,'getall'])->name('GetAll');
     Route::get('/get/{id}',[PuertoController::class,'get'])->name('GetId');
     Route::post('/create',[PuertoController::class,'create'])->name('Create');
@@ -107,7 +107,7 @@ Route::group(['prefix'=> '/puerto','middleware' => 'auth:sanctum'], function () 
 });
 
 //API MANTENIMIENTO DEPARTAMENTO
-Route::group(['prefix'=> '/departamento','middleware' => 'auth:sanctum'], function () {
+Route::group(['prefix'=> '/departamento','middleware' => 'jwt.verify'], function () {
     Route::get('/getall/{id?}',[DepartamentoController::class,'getall'])->name('GetAll');
     Route::get('/get/{id}',[DepartamentoController::class,'get'])->name('GetId');
     Route::post('/create',[DepartamentoController::class,'create'])->name('Create');
@@ -126,7 +126,7 @@ Route::group(['prefix'=> '/persona','middleware' => 'jwt.verify'], function () {
 });
 
 //API MANTENIMIENTO RESPUESTA
-Route::group(['prefix'=> '/respuesta','middleware' => 'auth:sanctum'], function () {
+Route::group(['prefix'=> '/respuesta','middleware' => 'jwt.verify'], function () {
     Route::get('/getall/{id?}',[RespuestaController::class,'Index'])->name('GetAll');
     Route::get('/get/{id}',[RespuestaController::class,'Get'])->name('GetId');
     Route::get('/resp',[RespuestaController::class,'Index'])->name('Respuesta');

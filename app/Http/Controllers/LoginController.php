@@ -47,7 +47,7 @@ class LoginController extends Controller
         $persona = Persona::select('nombre','apellido')
                          ->where('id','=',$usuario->persona_id)
                          ->first();
-         $permisos = $usuario->grupoPrivilegios();        
+        $permisos = $usuario->grupoPrivilegios();        
         
         //$token = JWTAuth::factory()->createToken($user, null, ['ttl' => 0.1]);
         return response()->json(

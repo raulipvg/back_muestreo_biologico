@@ -5,23 +5,6 @@ Backend para el sistema de formularios y planillas. Requiere de ``php ^8.0``. Ad
 
 Se seleccionó ``Tymon\JWTAuth`` para manejar las autenticaciónes ya que no habrían problemas de CORS, ni problemas con las cookies como session y CSRF-TOKEN al estar en sitios distintos o distintos niveles de dominio.
 
-#### IMPORTANTE
-
-Hay que agregar `'middleware' => 'jwt.verify'` a las rutas para protejerlas con JWT. A medida que se vaya agregando el middleware probar con el frontend, enviando el token mediante el header `Authorization`.
-
-Hasta el momento, se aplicó el middleware a los grupos de url:
-- Formulario
-- Clasificacion
-- Persona
-
-Falta tomar una desición para saber cómo manejar la actualización de los token de usuarios, luego que estos expiren en el backend y sigan almacenados en el frontend.
-
-- Instalar
-- Base de datos
-- Variables de entorno
-- Ejecutar
-
-
 ## Instalar
 
 Basta con usar el comando
@@ -33,7 +16,7 @@ y se instalará los paquetes y dependencias necesarias.
 
 ## Base de Datos
 
-El motor de base de datos usado en el proyecto es ``PostgreSQL 15``. En el directorio ``DB`` se encuentra el archivo ``BD-formularios-202405171406-EntregaFinalFormularios1.tar`` que corresponde a un dumb de la base de datos.
+El motor de base de datos usado en el proyecto es ``PostgreSQL 15``. En el directorio ``DB`` se encuentra el archivo ``BD-formularios-202405171406-EntregaFinalFormularios1.tar`` que corresponde a un dump de la base de datos.
 
 Para restaurar el backup, es necesario crear la base de datos, y estando vacía realizar un *restore backup*.
 
@@ -64,7 +47,7 @@ Luego, se debe crear el secreto de JWT con el siguiente comando:
 Que agregará la siguiente línea en .env, con un hash
 
     ...
-    67 | JWT_SECRET= //hash//
+    85 | JWT_SECRET= //hash//
 
 ## Ejecutar
 

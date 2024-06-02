@@ -34,7 +34,7 @@ class JwtMiddleware
             }
             return response()->json([
                 'status' => 'token not found'
-            ],401);
+            ],400);
         }
         return $next($request);
     }
