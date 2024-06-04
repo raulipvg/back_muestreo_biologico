@@ -39,7 +39,7 @@ Route::group(['prefix'=> '/formulario','middleware' => 'jwt.verify'], function (
     Route::post('/update',[FormularioController::class,'update'])->name('Update');
     Route::post('/cambiarestado',[FormularioController::class,'cambiarestado'])->name('CambiarEstado');
     Route::get('/getselects',[FormularioController::class,'getselects'])->name('GetSelects');
-    Route::get('/getenabled',[FormularioController::class,'formulariosEnabled'])->name('GetEnabled');
+    Route::get('/getenabled/{id?}',[FormularioController::class,'formulariosEnabled'])->name('GetEnabled');
 
 });
 
