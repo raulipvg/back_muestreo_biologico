@@ -144,6 +144,7 @@ Route::post('/login',[LoginController::class,'login'])->name('login');
 // Agregado el middleware, ya que un usuario no autenticado no podría hacer logout
 Route::post('/logout',[LoginController::class,'logout'])->middleware('jwt.verify');
 
+
 Route::group(['prefix'=> '/test','middleware' => 'jwt.verify'], function () {
     Route::get('/resp',[RespuestaController::class,'Index'])->name('Respuesta');
 });

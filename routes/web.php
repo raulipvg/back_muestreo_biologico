@@ -18,18 +18,7 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-//API LOGIN
-Route::group(['prefix'=> '/login'], function () {
-    //  RUTAS DE GOOGLE
-    //Route::get('/google/redirect', [LoginController::class, 'redirectToGoogle']);
-    //Route::get('/google/callback', [LoginController::class, 'handleGoogleCallback']);
-    
-    
-    Route::post('/',[LoginController::class,'InicioNormal'])->name('login');
-    Route::post('/register',[LoginController::class,'register'])->name('register');
-    // LOGOUT
-});
-
-
-
-Route::middleware('auth:sanctum')->post('/logout',[LoginController::class,'CerrarSesion'])->name('logout');
+//Redireccionar hacia Google
+//Route::get('/google/redirect',[LoginController::class, 'redirectToGoogle']);
+//Recibir la data desde el front
+//Route::get('/google/callback',[LoginController::class, 'handleGoogleCallback']);
